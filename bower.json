@@ -1,0 +1,40 @@
+{
+  "name": "october_storm",
+  "description": "October Storm",
+  "main": "",
+  "authors": [
+    {
+      "name": "Alexey Bobkov",
+      "email": "aleksey.bobkov@gmail.com",
+      "role": "Co-founder"
+    },
+    {
+      "name": "Samuel Georges",
+      "email": "daftspunky@gmail.com",
+      "role": "Co-founder"
+    }
+  ],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "bootstrap": "^3.3.7",
+    "moment": "^2.17.1",
+    "mustache.js": "mustache#^2.3.0",
+    "modernizr": "^3.3.1",
+    "raphael": "^2.2.7",
+    "Flot": "flot#^0.8.3",
+    "select2": "select2-dist#^4.0.3",
+    "jquery-mousewheel": "^3.1.13",
+    "jquery-sortable": "^0.9.13",
+    "moment-timezone": "^0.5.11",
+    "pikaday": "^1.5.1",
+    "clockpicker": "^0.0.7"
+  }
+}

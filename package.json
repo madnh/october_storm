@@ -1,0 +1,40 @@
+{
+  "name": "october_storm",
+  "version": "1.0.0",
+  "description": "October Storm",
+  "main": "storm.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/madnh/october_storm.git"
+  },
+  "keywords": [
+    "october",
+    "storm"
+  ],
+  "authors": [
+    {
+      "name": "Alexey Bobkov",
+      "email": "aleksey.bobkov@gmail.com",
+      "role": "Co-founder"
+    },
+    {
+      "name": "Samuel Georges",
+      "email": "daftspunky@gmail.com",
+      "role": "Co-founder"
+    }
+  ],
+  "license": "OctoberCMS",
+  "homepage": "https://github.com/madnh/october_storm",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-uglify": "^0.11.0"
+  }
+}
