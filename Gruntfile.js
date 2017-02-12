@@ -2,6 +2,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-less');
 
     //Project configuration
     grunt.initConfig({
@@ -30,7 +31,7 @@ module.exports = function (grunt) {
                     'vendor/pikaday/plugins/pikaday.jquery.js',
                     'vendor/clockpicker/dist/jquery-clockpicker.js'
                 ],
-                dest: 'dist/storm_depends.js'
+                dest: 'js_dist/storm_depends.js'
             },
             stormNoDepends: {
                 src: [
@@ -100,14 +101,14 @@ module.exports = function (grunt) {
                     'js/inspector.externalparametereditor.js',
                     'js/list.sortable.js'
                 ],
-                dest: 'dist/storm_no_depend.js'
+                dest: 'js_dist/storm_no_depend.js'
             },
             storm: {
                 src: [
-                    'dist/storm_depends.js',
-                    'dist/storm_no_depend.js'
+                    'js_dist/storm_depends.js',
+                    'js_dist/storm_no_depend.js'
                 ],
-                dest: 'dist/storm.js'
+                dest: 'js_dist/storm.js'
             }
         },
         uglify: {
