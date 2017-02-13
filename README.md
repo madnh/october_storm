@@ -36,6 +36,13 @@ The above uses two modifiers; one to make it purple and one to declare that it i
 
 ## Files
 
-* **storm_depends.js**: Depend scripts of Storm
-* **storm_no_depend.js**: Only Storm
-* **storm.js**: Storm and dependencies
+### CSS
+
+ * **storm.less**: LESS file
+ * **storm.css**: CSS file
+
+### JS
+ 
+* **stormdepends.js**: Dependencies scripts of Storm
+* **storm.js**: Only Storm
+* **storm_with_depend.js**: Storm and dependencies

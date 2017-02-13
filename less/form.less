@@ -13,7 +13,7 @@
 //@import "form.groups.less";
 
 // Load order
-//@import "select.less";
+@import "select.less";
 @import "checkbox.less";
 
 //
@@ -436,13 +436,9 @@ body.slim-container {
 // Select2
 //
 //
-//.select2-container--default .select2-selection--single .select2-selection__arrow b {
-//    border: none;
-//}
-//
-//.select2-dropdown {
-//    z-index: @zindex-select;
-//}
+.select2-dropdown {
+    z-index: @zindex-select;
+}
 
 //
 // Controls inside toolbar
