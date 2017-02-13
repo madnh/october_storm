@@ -606,10 +606,10 @@
 +function ($) {
     "use strict";
 
-    $(document).on('shown.bs.dropdown', '.dropdown', function (event, relatedTarget) {
+    $(document).on('shown.bs.dropdown', '.custom-dropdown', function (event, relatedTarget) {
         $(document.body).addClass('dropdown-open');
 
-        var dropdown = $(relatedTarget.relatedTarget).siblings('.dropdown-menu'),
+        var dropdown = (relatedTarget? relatedTarget: $(event.relatedTarget)).siblings('.dropdown-menu'),
             dropdownContainer = $(this).data('dropdown-container');
 
         // The dropdown menu should be a sibling of the triggering element (above)
@@ -699,7 +699,7 @@
         }
     });
 
-    $(document).on('hidden.bs.dropdown', '.dropdown', function () {
+    $(document).on('hidden.bs.dropdown', '.custom-dropdown', function () {
         var dropdown = $(this).data('oc.dropdown');
         if (dropdown !== undefined) {
             dropdown.css('display', 'none');
@@ -726,7 +726,7 @@
         })
     }
 
-    $(document).on('shown.bs.dropdown', '.dropdown.dropdown-fixed', function (event, eventData) {
+    $(document).on('shown.bs.dropdown', '.custom-dropdown.dropdown-fixed', function (event, eventData) {
         $container = $(this);
         $dropdown = $('.dropdown-menu', $container);
         $target = $(eventData.relatedTarget);
@@ -735,7 +735,7 @@
         $(window).on('scroll.oc.dropdown, resize.oc.dropdown', fixDropdownPosition)
     });
 
-    $(document).on('hidden.bs.dropdown', '.dropdown.dropdown-fixed', function () {
+    $(document).on('hidden.bs.dropdown', '.custom-dropdown.dropdown-fixed', function () {
         $(window).off('scroll.oc.dropdown, resize.oc.dropdown', fixDropdownPosition)
     })
 

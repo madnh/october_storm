@@ -1,5 +1,5 @@
 // Dropdown arrow/caret
-.caret {
+.custom-dropdown .caret {
     display: inline-block;
     width: 0;
     height: 0;
@@ -11,7 +11,7 @@
 }
 
 // The dropdown wrapper (div)
-.dropdown {
+.custom-dropdown {
     position: relative;
 }
 
@@ -21,7 +21,7 @@
 }
 
 // The dropdown menu (ul)
-.dropdown-menu {
+.custom-dropdown .dropdown-menu {
     position: absolute;
     top: 100%;
     left: 0;
@@ -69,7 +69,7 @@
 }
 
 // Hover/Focus state
-.dropdown-menu > li > a {
+.custom-dropdown .dropdown-menu > li > a {
     &:hover,
     &:focus {
         text-decoration: none;
@@ -79,7 +79,7 @@
 }
 
 // Active state
-.dropdown-menu > .active > a {
+.custom-dropdown .dropdown-menu > .active > a {
     &,
     &:hover,
     &:focus {
@@ -94,7 +94,7 @@
 //
 // Gray out text and ensure the hover/focus state remains gray
 
-.dropdown-menu > .disabled > a {
+.custom-dropdown .dropdown-menu > .disabled > a {
     &,
     &:hover,
     &:focus {
@@ -102,7 +102,7 @@
     }
 }
 // Nuke hover/focus effects
-.dropdown-menu > .disabled > a {
+.custom-dropdown .dropdown-menu > .disabled > a {
     &:hover,
     &:focus {
         text-decoration: none;
@@ -114,7 +114,7 @@
 }
 
 // Open state for the dropdown
-.open {
+.custom-dropdown.open {
     // Show the menu
     > .dropdown-menu {
         display: block;
@@ -172,7 +172,7 @@
 //
 // Just add .dropup after the standard .dropdown class and you're set, bro.
 
-.dropup {
+.custom-dropdown.dropup {
     // Reverse the caret
     .caret {
         border-top: 0;
