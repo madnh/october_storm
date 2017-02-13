@@ -16,9 +16,9 @@
  *  - bootstrap/tooltip
  */
 
-(function($){
+(function ($) {
 
-    $(document).render(function(){
+    $(document).on('render', function () {
         $('[data-control="tooltip"], [data-toggle="tooltip"]').tooltip()
     })
 

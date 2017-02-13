@@ -1,19 +1,20 @@
 /*
  * Inspector regex validator.
  */
-+function ($) { "use strict";
++function ($) {
+    "use strict";
 
-    var Base = $.oc.inspector.validators.base,
-        BaseProto = Base.prototype
+    var Base = Storm.inspector.validators.base,
+        BaseProto = Base.prototype;
 
-    var RegexValidator = function(options) {
+    var RegexValidator = function (options) {
         Base.call(this, options)
-    }
+    };
 
-    RegexValidator.prototype = Object.create(BaseProto)
-    RegexValidator.prototype.constructor = Base
+    RegexValidator.prototype = Object.create(BaseProto);
+    RegexValidator.prototype.constructor = Base;
 
-    RegexValidator.prototype.isValid = function(value) {
+    RegexValidator.prototype.isValid = function (value) {
         if (this.options.pattern === undefined) {
             this.throwError('The pattern parameter is not defined in the Regex Inspector validator configuration.')
         }
@@ -26,16 +27,16 @@
             return null
         }
 
-        var string = $.trim(String(value))
+        var string = $.trim(String(value));
 
         if (string.length === 0) {
             return null
         }
 
-        var regexObj = new RegExp(this.options.pattern, this.options.modifiers)
+        var regexObj = new RegExp(this.options.pattern, this.options.modifiers);
 
         return regexObj.test(string) ? null : this.getMessage()
-    }
+    };
 
-    $.oc.inspector.validators.regex = RegexValidator
+    Storm.inspector.validators.regex = RegexValidator
 }(window.jQuery);

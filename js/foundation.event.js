@@ -7,15 +7,17 @@
  *
  * Usage examples:
  *
- * $.oc.foundation.event.stop(ev)
+ * Storm.foundation.event.stop(ev)
  *
  */
-+function ($) { "use strict";
-    if ($.oc === undefined)
-        $.oc = {}
++function ($) {
+    "use strict";
+    if (window.Storm === undefined) {
+        window.Storm = {};
+    }
 
-    if ($.oc.foundation === undefined)
-        $.oc.foundation = {}
+    if (Storm.foundation === undefined)
+        Storm.foundation = {};
 
     var Event = {
         /*
@@ -24,19 +26,19 @@
          * will try to find the first parent with the tag name matching
          * the argument value.
          */
-        getTarget: function(ev, tag) {
-            var target = ev.target ? ev.target : ev.srcElement
+        getTarget: function (ev, tag) {
+            var target = ev.target ? ev.target : ev.srcElement;
 
             if (tag === undefined)
-                return target
+                return target;
 
-            var tagName = target.tagName
+            var tagName = target.tagName;
 
             while (tagName != tag) {
-                target = target.parentNode
+                target = target.parentNode;
 
                 if (!target)
-                    return null
+                    return null;
 
                 tagName = target.tagName
             }
@@ -44,19 +46,19 @@
             return target
         },
 
-        stop: function(ev) {
+        stop: function (ev) {
             if (ev.stopPropagation)
-                ev.stopPropagation()
+                ev.stopPropagation();
             else
-                ev.cancelBubble = true
+                ev.cancelBubble = true;
 
-            if(ev.preventDefault)
-                ev.preventDefault()
+            if (ev.preventDefault)
+                ev.preventDefault();
             else
                 ev.returnValue = false
         },
 
-        pageCoordinates: function(ev) {
+        pageCoordinates: function (ev) {
             if (ev.pageX || ev.pageY) {
                 return {
                     x: ev.pageX,
@@ -75,7 +77,7 @@
                 y: 0
             }
         }
-    }
+    };
 
-    $.oc.foundation.event = Event;
+    Storm.foundation.event = Event;
 }(window.jQuery);

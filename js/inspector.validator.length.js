@@ -1,19 +1,20 @@
 /*
  * Inspector length validator.
  */
-+function ($) { "use strict";
++function ($) {
+    "use strict";
 
-    var Base = $.oc.inspector.validators.base,
-        BaseProto = Base.prototype
+    var Base = Storm.inspector.validators.base,
+        BaseProto = Base.prototype;
 
-    var LengthValidator = function(options) {
+    var LengthValidator = function (options) {
         Base.call(this, options)
-    }
+    };
 
-    LengthValidator.prototype = Object.create(BaseProto)
-    LengthValidator.prototype.constructor = Base
+    LengthValidator.prototype = Object.create(BaseProto);
+    LengthValidator.prototype.constructor = Base;
 
-    LengthValidator.prototype.isValid = function(value) {
+    LengthValidator.prototype.isValid = function (value) {
         if (value === undefined || value === null) {
             return null
         }
@@ -23,9 +24,9 @@
 
         }
 
-        var length = null
+        var length = null;
 
-        if(Object.prototype.toString.call(value) === '[object Array]' || typeof value === 'string') {
+        if (Object.prototype.toString.call(value) === '[object Array]' || typeof value === 'string') {
             length = value.length
         }
         else if (typeof value === 'object') {
@@ -47,7 +48,7 @@
 
             if (this.options.max !== undefined) {
                 if (this.options.max.value === undefined)
-                    throw new Error('The max.value parameter is not defined in the Length Inspector validator configuration.')
+                    throw new Error('The max.value parameter is not defined in the Length Inspector validator configuration.');
 
                 if (length > this.options.max.value) {
                     return this.options.max.message !== undefined ?
@@ -56,17 +57,17 @@
                 }
             }
         }
-    }
+    };
 
-    LengthValidator.prototype.getObjectLength = function(value) {
-        var result = 0
+    LengthValidator.prototype.getObjectLength = function (value) {
+        var result = 0;
 
         for (var key in value) {
             result++
         }
 
         return result
-    }
+    };
 
-    $.oc.inspector.validators.length = LengthValidator
+    Storm.inspector.validators.length = LengthValidator
 }(window.jQuery);

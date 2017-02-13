@@ -4,25 +4,27 @@
  * The helpers are used mostly by the Inspector Surface.
  *
  */
-+function ($) { "use strict";
++function ($) {
+    "use strict";
 
     // NAMESPACES
     // ============================
 
-    if ($.oc === undefined)
-        $.oc = {}
+    if (window.Storm === undefined) {
+        window.Storm = {};
+    }
 
-    if ($.oc.inspector === undefined)
-        $.oc.inspector = {}
+    if (Storm.inspector === undefined)
+        Storm.inspector = {};
 
-    $.oc.inspector.engine = {}
+    Storm.inspector.engine = {};
 
     // CLASS DEFINITION
     // ============================
 
     function findGroup(group, properties) {
         for (var i = 0, len = properties.length; i < len; i++) {
-            var property = properties[i]
+            var property = properties[i];
 
             if (property.itemType !== undefined && property.itemType == 'group' && property.title == group) {
                 return property
@@ -32,36 +34,36 @@
         return null
     }
 
-    $.oc.inspector.engine.processPropertyGroups = function(properties) {
+    Storm.inspector.engine.processPropertyGroups = function (properties) {
         var fields = [],
             result = {
                 hasGroups: false,
                 properties: []
             },
-            groupIndex = 0
+            groupIndex = 0;
 
         for (var i = 0, len = properties.length; i < len; i++) {
-            var property = properties[i]
+            var property = properties[i];
 
             if (property['sortOrder'] === undefined) {
-                property['sortOrder'] = (i+1)*20
+                property['sortOrder'] = (i + 1) * 20
             }
         }
 
-        properties.sort(function(a, b){
+        properties.sort(function (a, b) {
             return a['sortOrder'] - b['sortOrder']
-        })
+        });
 
         for (var i = 0, len = properties.length; i < len; i++) {
-            var property = properties[i]
+            var property = properties[i];
 
-            property.itemType = 'property'
+            property.itemType = 'property';
 
             if (property.group === undefined) {
                 fields.push(property)
             }
             else {
-                var group = findGroup(property.group, fields)
+                var group = findGroup(property.group, fields);
 
                 if (!group) {
                     group = {
@@ -69,24 +71,24 @@
                         title: property.group,
                         properties: [],
                         groupIndex: groupIndex
-                    }
+                    };
 
-                    groupIndex++
+                    groupIndex++;
                     fields.push(group)
                 }
 
-                property.groupIndex = group.groupIndex
+                property.groupIndex = group.groupIndex;
                 group.properties.push(property)
             }
         }
 
         for (var i = 0, len = fields.length; i < len; i++) {
-            var property = fields[i]
+            var property = fields[i];
 
-            result.properties.push(property)
+            result.properties.push(property);
 
             if (property.itemType == 'group') {
-                result.hasGroups = true
+                result.hasGroups = true;
 
                 for (var j = 0, propertiesLen = property.properties.length; j < propertiesLen; j++) {
                     result.properties.push(property.properties[j])

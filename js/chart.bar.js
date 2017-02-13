@@ -12,127 +12,128 @@
  * Dependences:
  * - Raphaël (raphael-min.js)
  */
-+function ($) { "use strict";
++function ($) {
+    "use strict";
 
     var BarChart = function (element, options) {
-        this.options = options || {}
+        this.options = options || {};
 
-        var 
+        var
             $el = this.$el = $(element),
             size = this.size = $el.height(),
             self = this,
-            values = $.oc.chartUtils.loadListValues($('ul', $el)),
-            $legend = $.oc.chartUtils.createLegend($('ul', $el)),
-            indicators = $.oc.chartUtils.initLegendColorIndicators($legend),
+            values = Storm.chartUtils.loadListValues($('ul', $el)),
+            $legend = Storm.chartUtils.createLegend($('ul', $el)),
+            indicators = Storm.chartUtils.initLegendColorIndicators($legend),
             isFullWidth = this.isFullWidth(),
             chartHeight = this.options.height !== undefined ? this.options.height : size,
             chartWidth = isFullWidth ? this.$el.width() : size,
-            barWidth = (chartWidth - (values.values.length-1)*this.options.gap)/values.values.length
+            barWidth = (chartWidth - (values.values.length - 1) * this.options.gap) / values.values.length;
 
-        var $canvas = $('<div/>').addClass('canvas').height(chartHeight).width(isFullWidth ? '100%' : chartWidth)
-        $el.prepend($canvas)
-        $el.toggleClass('full-width', isFullWidth)
+        var $canvas = $('<div/>').addClass('canvas').height(chartHeight).width(isFullWidth ? '100%' : chartWidth);
+        $el.prepend($canvas);
+        $el.toggleClass('full-width', isFullWidth);
 
-        Raphael($canvas.get(0), isFullWidth ? '100%' : chartWidth, chartHeight, function(){
-            self.paper = this
-            self.bars = this.set()
+        Raphael($canvas.get(0), isFullWidth ? '100%' : chartWidth, chartHeight, function () {
+            self.paper = this;
+            self.bars = this.set();
 
             self.paper.customAttributes.bar = function (start, height) {
                 return {
                     path: [
                         ["M", start, chartHeight],
-                        ["L", start, chartHeight-height],
-                        ["L", start + barWidth, chartHeight-height],
+                        ["L", start, chartHeight - height],
+                        ["L", start + barWidth, chartHeight - height],
                         ["L", start + barWidth, chartHeight],
                         ["Z"]
                     ]
                 }
-            }
+            };
 
             // Add bars
-            var start = 0
-            $.each(values.values, function(index, valueInfo) {
-                var color = valueInfo.color !== undefined ? valueInfo.color : $.oc.chartUtils.getColor(index),
-                    path = self.paper.path().attr({"stroke-width": 0}).attr({bar: [start, 0]}).attr({fill: color})
+            var start = 0;
+            $.each(values.values, function (index, valueInfo) {
+                var color = valueInfo.color !== undefined ? valueInfo.color : Storm.chartUtils.getColor(index),
+                    path = self.paper.path().attr({"stroke-width": 0}).attr({bar: [start, 0]}).attr({fill: color});
 
-                self.bars.push(path)
-                indicators[index].css('background-color', color)
-                start += barWidth + self.options.gap
+                self.bars.push(path);
+                indicators[index].css('background-color', color);
+                start += barWidth + self.options.gap;
 
-                path.hover(function(ev){
-                    $.oc.chartUtils.showTooltip(ev.pageX, ev.pageY, 
-                        $.trim($.oc.chartUtils.getLegendLabel($legend, index)) + ': <strong>'+valueInfo.value+'</stong>')
-                }, function() {
-                    $.oc.chartUtils.hideTooltip()
+                path.hover(function (ev) {
+                    Storm.chartUtils.showTooltip(ev.pageX, ev.pageY,
+                        $.trim(Storm.chartUtils.getLegendLabel($legend, index)) + ': <strong>' + valueInfo.value + '</stong>')
+                }, function () {
+                    Storm.chartUtils.hideTooltip()
                 })
-            })
+            });
 
             // Animate bars
-            start = 0
-            $.each(values.values, function(index, valueInfo) {
-                var height = (values.max && valueInfo.value) ? chartHeight/values.max * valueInfo.value : 0
+            start = 0;
+            $.each(values.values, function (index, valueInfo) {
+                var height = (values.max && valueInfo.value) ? chartHeight / values.max * valueInfo.value : 0;
 
-                self.bars[index].animate({bar: [start, height]}, 1000, "bounce")
+                self.bars[index].animate({bar: [start, height]}, 1000, "bounce");
                 start += barWidth + self.options.gap
-            })
+            });
 
             // Update the full-width chart when the window is redized
             if (isFullWidth) {
-                $(window).on('resize', function(){
-                    chartWidth = self.$el.width()
-                    barWidth = (chartWidth - (values.values.length-1)*self.options.gap)/values.values.length
+                $(window).on('resize', function () {
+                    chartWidth = self.$el.width();
+                    barWidth = (chartWidth - (values.values.length - 1) * self.options.gap) / values.values.length;
 
-                    var start = 0
-                    $.each(values.values, function(index, valueInfo) {
-                        var height = (values.max && valueInfo.value) ? chartHeight/values.max * valueInfo.value : 0
+                    var start = 0;
+                    $.each(values.values, function (index, valueInfo) {
+                        var height = (values.max && valueInfo.value) ? chartHeight / values.max * valueInfo.value : 0;
 
-                        self.bars[index].animate({bar: [start, height]}, 10, "bounce")
+                        self.bars[index].animate({bar: [start, height]}, 10, "bounce");
                         start += barWidth + self.options.gap
                     })
                 })
             }
         })
-    }
+    };
 
-    BarChart.prototype.isFullWidth = function() {
-        return this.options.fullWidth !== undefined && this.options.fullWidth
-    }
+    BarChart.prototype.isFullWidth = function () {
+        return this.options.hasOwnProperty('fullWidth') && this.options.fullWidth
+    };
 
     BarChart.DEFAULTS = {
         gap: 2
-    }
+    };
 
     // BARCHART PLUGIN DEFINITION
     // ============================
 
-    var old = $.fn.barChart
+    var old = $.fn.barChart;
 
     $.fn.barChart = function (option) {
         return this.each(function () {
-            var $this = $(this)
-            var data  = $this.data('oc.barChart')
-            var options = $.extend({}, BarChart.DEFAULTS, $this.data(), typeof option == 'object' && option)
+            var $this = $(this);
+            var data = $this.data('oc.barChart');
+            var options = $.extend({}, BarChart.DEFAULTS, $this.data(), typeof option == 'object' && option);
 
             if (!data)
                 $this.data('oc.barChart', new BarChart(this, options))
         })
-    }
+    };
 
-    $.fn.barChart.Constructor = BarChart
+    $.fn.barChart.Constructor = BarChart;
 
     // BARCHART NO CONFLICT
     // =================
 
     $.fn.barChart.noConflict = function () {
-        $.fn.barChart = old
+        $.fn.barChart = old;
         return this
-    }
+    };
 
     // BARCHART DATA-API
     // ===============
 
-    $(document).render(function () {
+    $(document).on('render', function () {
         $('[data-control=chart-bar]').barChart()
     })
 
-}(window.jQuery)
+}(window.jQuery);

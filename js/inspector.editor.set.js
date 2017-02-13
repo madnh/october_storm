@@ -1,52 +1,53 @@
 /*
  * Inspector set editor class.
  *
- * This class uses $.oc.inspector.propertyEditors.checkbox editor.
+ * This class uses Storm.inspector.propertyEditors.checkbox editor.
  */
-+function ($) { "use strict";
++function ($) {
+    "use strict";
 
-    var Base = $.oc.inspector.propertyEditors.base,
-        BaseProto = Base.prototype
+    var Base = Storm.inspector.propertyEditors.base,
+        BaseProto = Base.prototype;
 
-    var SetEditor = function(inspector, propertyDefinition, containerCell, group) {
-        this.editors = []
-        this.loadedItems = null
+    var SetEditor = function (inspector, propertyDefinition, containerCell, group) {
+        this.editors = [];
+        this.loadedItems = null;
 
         Base.call(this, inspector, propertyDefinition, containerCell, group)
-    }
+    };
 
-    SetEditor.prototype = Object.create(BaseProto)
-    SetEditor.prototype.constructor = Base
+    SetEditor.prototype = Object.create(BaseProto);
+    SetEditor.prototype.constructor = Base;
 
-    SetEditor.prototype.init = function() {
-        this.initControlGroup()
+    SetEditor.prototype.init = function () {
+        this.initControlGroup();
 
         BaseProto.init.call(this)
-    }
+    };
 
-    SetEditor.prototype.dispose = function() {
-        this.disposeEditors()
-        this.disposeControls()
+    SetEditor.prototype.dispose = function () {
+        this.disposeEditors();
+        this.disposeControls();
 
-        this.editors = null
+        this.editors = null;
 
         BaseProto.dispose.call(this)
-    }
+    };
 
     //
     // Building
     //
 
-    SetEditor.prototype.build = function() {
-        var link = document.createElement('a')
+    SetEditor.prototype.build = function () {
+        var link = document.createElement('a');
 
-        $.oc.foundation.element.addClass(link, 'trigger')
-        link.setAttribute('href', '#')
-        this.setLinkText(link)
+        Storm.foundation.element.addClass(link, 'trigger');
+        link.setAttribute('href', '#');
+        this.setLinkText(link);
 
-        $.oc.foundation.element.addClass(this.containerCell, 'trigger-cell')
+        Storm.foundation.element.addClass(this.containerCell, 'trigger-cell');
 
-        this.containerCell.appendChild(link)
+        this.containerCell.appendChild(link);
 
         if (this.propertyDefinition.items !== undefined) {
             this.loadStaticItems()
@@ -54,10 +55,10 @@
         else {
             this.loadDynamicItems()
         }
-    }
+    };
 
-    SetEditor.prototype.loadStaticItems = function() {
-        var itemArray = []
+    SetEditor.prototype.loadStaticItems = function () {
+        var itemArray = [];
 
         for (var itemValue in this.propertyDefinition.items) {
             itemArray.push({
@@ -66,42 +67,42 @@
             })
         }
 
-        for (var i = itemArray.length-1; i >=0; i--) {
+        for (var i = itemArray.length - 1; i >= 0; i--) {
             this.buildItemEditor(itemArray[i].value, itemArray[i].title)
         }
-    }
+    };
 
-    SetEditor.prototype.setLinkText = function(link, value) {
-        var value = (value !== undefined && value !== null) ? value 
+    SetEditor.prototype.setLinkText = function (link, value) {
+        var value = (value !== undefined && value !== null) ? value
                 : this.getNormalizedValue(),
-            text = '[ ]'
+            text = '[ ]';
 
         if (value === undefined) {
             value = this.propertyDefinition.default
         }
 
         if (value !== undefined && value.length !== undefined && value.length > 0 && typeof value !== 'string') {
-            var textValues = []
+            var textValues = [];
             for (var i = 0, len = value.length; i < len; i++) {
                 textValues.push(this.valueToText(value[i]))
             }
 
-            text = '[' + textValues.join(', ') + ']'
-            $.oc.foundation.element.removeClass(link, 'placeholder')
+            text = '[' + textValues.join(', ') + ']';
+            Storm.foundation.element.removeClass(link, 'placeholder')
         }
         else {
-            text = this.propertyDefinition.placeholder
+            text = this.propertyDefinition.placeholder;
 
             if ((typeof text === 'string' && text.length == 0) || text === undefined) {
                 text = '[ ]'
             }
-            $.oc.foundation.element.addClass(link, 'placeholder')
+            Storm.foundation.element.addClass(link, 'placeholder')
         }
 
         link.textContent = text
-    }
+    };
 
-    SetEditor.prototype.buildItemEditor = function(value, text) {
+    SetEditor.prototype.buildItemEditor = function (value, text) {
         var property = {
                 title: text,
                 itemType: 'property',
@@ -110,108 +111,108 @@
             newRow = this.createGroupedRow(property),
             currentRow = this.containerCell.parentNode,
             tbody = this.containerCell.parentNode.parentNode, // row / tbody
-            cell = document.createElement('td')
+            cell = document.createElement('td');
 
-        this.buildCheckbox(cell, value, text)
+        this.buildCheckbox(cell, value, text);
 
-        newRow.appendChild(cell)
+        newRow.appendChild(cell);
         tbody.insertBefore(newRow, currentRow.nextSibling)
-    }
+    };
 
-    SetEditor.prototype.buildCheckbox = function(cell, value, title) {
+    SetEditor.prototype.buildCheckbox = function (cell, value, title) {
         var property = {
                 property: value,
                 title: title,
                 default: this.isCheckedByDefault(value)
             },
-            editor = new $.oc.inspector.propertyEditors.checkbox(this, property, cell, this.group)
+            editor = new Storm.inspector.propertyEditors.checkbox(this, property, cell, this.group);
 
-        this.editors.push[editor]
-    }
+        this.editors.push(editor);
+    };
 
-    SetEditor.prototype.isCheckedByDefault = function(value) {
+    SetEditor.prototype.isCheckedByDefault = function (value) {
         if (!this.propertyDefinition.default) {
             return false
         }
 
         return this.propertyDefinition.default.indexOf(value) > -1
-    }
+    };
 
     //
     // Dynamic items
     //
 
-    SetEditor.prototype.showLoadingIndicator = function() {
+    SetEditor.prototype.showLoadingIndicator = function () {
         $(this.getLink()).loadIndicator()
-    }
+    };
 
-    SetEditor.prototype.hideLoadingIndicator = function() {
+    SetEditor.prototype.hideLoadingIndicator = function () {
         if (this.isDisposed()) {
             return
         }
 
-        var $link = $(this.getLink())
+        var $link = $(this.getLink());
 
-        $link.loadIndicator('hide')
+        $link.loadIndicator('hide');
         $link.loadIndicator('destroy')
-    }
+    };
 
-    SetEditor.prototype.loadDynamicItems = function() {
+    SetEditor.prototype.loadDynamicItems = function () {
         var link = this.getLink(),
             data = this.inspector.getValues(),
-            $form = $(link).closest('form')
+            $form = $(link).closest('form');
 
-        $.oc.foundation.element.addClass(link, 'loading-indicator-container size-small')
-        this.showLoadingIndicator()
+        Storm.foundation.element.addClass(link, 'loading-indicator-container size-small');
+        this.showLoadingIndicator();
 
-        data['inspectorProperty'] = this.getPropertyPath()
-        data['inspectorClassName'] = this.inspector.options.inspectorClass
+        data['inspectorProperty'] = this.getPropertyPath();
+        data['inspectorClassName'] = this.inspector.options.inspectorClass;
 
         $form.request('onInspectableGetOptions', {
             data: data,
         })
-        .done(this.proxy(this.itemsRequestDone))
-        .always(this.proxy(this.hideLoadingIndicator))
-    }
+            .done(this.proxy(this.itemsRequestDone))
+            .always(this.proxy(this.hideLoadingIndicator))
+    };
 
-    SetEditor.prototype.itemsRequestDone = function(data, currentValue, initialization) {
+    SetEditor.prototype.itemsRequestDone = function (data, currentValue, initialization) {
         if (this.isDisposed()) {
             // Handle the case when the asynchronous request finishes after
             // the editor is disposed
             return
         }
 
-        this.loadedItems = {}
+        this.loadedItems = {};
 
         if (data.options) {
-            for (var i = data.options.length-1; i >= 0; i--) {
-                this.buildItemEditor(data.options[i].value, data.options[i].title)
+            for (var i = data.options.length - 1; i >= 0; i--) {
+                this.buildItemEditor(data.options[i].value, data.options[i].title);
 
                 this.loadedItems[data.options[i].value] = data.options[i].title
             }
         }
 
         this.setLinkText(this.getLink())
-    }
+    };
 
     //
     // Helpers
     //
 
-    SetEditor.prototype.getLink = function() {
+    SetEditor.prototype.getLink = function () {
         return this.containerCell.querySelector('a.trigger')
-    }
+    };
 
-    SetEditor.prototype.getItemsSource = function() {
+    SetEditor.prototype.getItemsSource = function () {
         if (this.propertyDefinition.items !== undefined) {
             return this.propertyDefinition.items
         }
 
         return this.loadedItems
-    }
+    };
 
-    SetEditor.prototype.valueToText = function(value) {
-        var source = this.getItemsSource()
+    SetEditor.prototype.valueToText = function (value) {
+        var source = this.getItemsSource();
 
         if (!source) {
             return value
@@ -224,22 +225,22 @@
         }
 
         return value
-    }
+    };
 
     /* 
      * Removes items that don't exist in the defined items from
      * the value.
      */
-    SetEditor.prototype.cleanUpValue = function(value) {
+    SetEditor.prototype.cleanUpValue = function (value) {
         if (!value) {
             return value
         }
 
         var result = [],
-            source = this.getItemsSource()
+            source = this.getItemsSource();
 
         for (var i = 0, len = value.length; i < len; i++) {
-            var currentValue = value[i]
+            var currentValue = value[i];
 
             if (source[currentValue] !== undefined) {
                 result.push(currentValue)
@@ -247,10 +248,10 @@
         }
 
         return result
-    }
+    };
 
-    SetEditor.prototype.getNormalizedValue = function() {
-        var value = this.inspector.getPropertyValue(this.propertyDefinition.property)
+    SetEditor.prototype.getNormalizedValue = function () {
+        var value = this.inspector.getPropertyValue(this.propertyDefinition.property);
 
         if (value === null) {
             value = undefined
@@ -265,19 +266,19 @@
         }
 
         return value
-    }
+    };
 
     //
     // Editor API methods
     //
 
-    SetEditor.prototype.supportsExternalParameterEditor = function() {
+    SetEditor.prototype.supportsExternalParameterEditor = function () {
         return false
-    }
+    };
 
-    SetEditor.prototype.isGroupedEditor = function() {
+    SetEditor.prototype.isGroupedEditor = function () {
         return true
-    }
+    };
 
     //
     // Inspector API methods
@@ -287,7 +288,7 @@
     // of the Inspector.
     //
 
-    SetEditor.prototype.getPropertyValue = function(checkboxValue) {
+    SetEditor.prototype.getPropertyValue = function (checkboxValue) {
         // When a checkbox requests the property value, we return
         // TRUE if the checkbox value is listed in the current values of
         // the set.
@@ -295,7 +296,7 @@
         // current set value is [create] and checkboxValue is "create".
         // The result of the method will be TRUE.
 
-        var value = this.getNormalizedValue()
+        var value = this.getNormalizedValue();
 
         if (value === undefined) {
             return this.isCheckedByDefault(checkboxValue)
@@ -306,14 +307,14 @@
         }
 
         return value.indexOf(checkboxValue) > -1
-    }
+    };
 
-    SetEditor.prototype.setPropertyValue = function(checkboxValue, isChecked) {
+    SetEditor.prototype.setPropertyValue = function (checkboxValue, isChecked) {
         // In this method the Set Editor mimics the Surface.
         // It acts as a parent surface for the children checkboxes,
         // watching changes in them and updating the link text.
 
-        var currentValue = this.getNormalizedValue()
+        var currentValue = this.getNormalizedValue();
 
         if (currentValue === undefined) {
             currentValue = this.propertyDefinition.default
@@ -324,14 +325,14 @@
         }
 
         var resultValue = [],
-            items = this.getItemsSource()
-            
+            items = this.getItemsSource();
+
         for (var itemValue in items) {
             if (itemValue !== checkboxValue) {
                 if (currentValue.indexOf(itemValue) !== -1) {
                     resultValue.push(itemValue)
                 }
-            } 
+            }
             else {
                 if (isChecked) {
                     resultValue.push(itemValue)
@@ -339,35 +340,35 @@
             }
         }
 
-        this.inspector.setPropertyValue(this.propertyDefinition.property, this.cleanUpValue(resultValue))
+        this.inspector.setPropertyValue(this.propertyDefinition.property, this.cleanUpValue(resultValue));
         this.setLinkText(this.getLink())
-    }
+    };
 
-    SetEditor.prototype.generateSequencedId = function() {
+    SetEditor.prototype.generateSequencedId = function () {
         return this.inspector.generateSequencedId()
-    }
+    };
 
     //
     // Disposing
     //
 
-    SetEditor.prototype.disposeEditors = function() {
+    SetEditor.prototype.disposeEditors = function () {
         for (var i = 0, len = this.editors.length; i < len; i++) {
-            var editor = this.editors[i]
+            var editor = this.editors[i];
 
             editor.dispose()
         }
-    }
+    };
 
-    SetEditor.prototype.disposeControls = function() {
-        var link = this.getLink()
+    SetEditor.prototype.disposeControls = function () {
+        var link = this.getLink();
 
         if (this.propertyDefinition.items === undefined) {
             $(link).loadIndicator('destroy')
         }
 
         link.parentNode.removeChild(link)
-    }
+    };
 
-    $.oc.inspector.propertyEditors.set = SetEditor
+    Storm.inspector.propertyEditors.set = SetEditor
 }(window.jQuery);

@@ -1,5 +1,4 @@
 module.exports = function (grunt) {
-    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-less');
@@ -7,9 +6,6 @@ module.exports = function (grunt) {
     //Project configuration
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        clean: {
-            main: 'dist/*'
-        },
         concat: {
             stormDepends: {
                 src: [
@@ -31,9 +27,9 @@ module.exports = function (grunt) {
                     'vendor/pikaday/plugins/pikaday.jquery.js',
                     'vendor/clockpicker/dist/jquery-clockpicker.js'
                 ],
-                dest: 'js_dist/storm_depends.js'
+                dest: 'depends.js'
             },
-            stormNoDepends: {
+            storm: {
                 src: [
                     'js/foundation.baseclass.js',
                     'js/foundation.element.js',
@@ -101,14 +97,24 @@ module.exports = function (grunt) {
                     'js/inspector.externalparametereditor.js',
                     'js/list.sortable.js'
                 ],
-                dest: 'js_dist/storm_no_depend.js'
+                dest: 'storm.js'
             },
-            storm: {
+            stormWithDepends: {
                 src: [
-                    'js_dist/storm_depends.js',
-                    'js_dist/storm_no_depend.js'
+                    'depends.js',
+                    'dstorm.js'
                 ],
-                dest: 'js_dist/storm.js'
+                dest: 'storm_with_depend.js'
+            }
+        },
+        less: {
+            default: {
+                options: {
+                    compress: false
+                },
+                files: {
+                    'storm.css': 'storm.less'
+                }
             }
         },
         uglify: {
@@ -116,18 +122,22 @@ module.exports = function (grunt) {
                 sourceMap: true,
                 ext: '.min.js'
             },
-            stormNoDepends: {
-                src: 'dist/storm_no_depend.js',
-                dest: 'dist/storm_no_depend.min.js'
+            depends: {
+                src: 'depends.js',
+                dest: 'depends.min.js'
             },
             storm: {
-                src: 'dist/storm.js',
-                dest: 'dist/storm.min.js'
+                src: 'storm.js',
+                dest: 'storm.min.js'
+            },
+            stormWithDepend: {
+                src: 'storm_with_depend.js',
+                dest: 'storm_with_depend.min.js'
             }
         }
     });
 
 
-    grunt.registerTask('build', ['clean:main', 'concat', 'uglify']);
+    grunt.registerTask('build', ['concat', 'uglify', 'less']);
     grunt.registerTask('default', ['build']);
 };

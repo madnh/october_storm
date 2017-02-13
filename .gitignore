@@ -1,6 +1,4 @@
 .idea
 
-/vendor/*
-!/vendor/.gitkeep
-
+/vendor/
 node_modules/

@@ -2,19 +2,10 @@
 // Icon
 // --------------------------------------------------
 
-@import "icon.icons.less";
-@import "icon.close.less";
+@import "icon.mixins.less";
+@import "../vendor/font-awesome/less/icons.less";
 
-@font-face {
-    font-family: 'FontAwesome';
-    src: url('@{icon-font-path}/fontawesome-webfont.eot?v=@{icon-font-version}');
-    src: url('@{icon-font-path}/fontawesome-webfont.eot?#iefix&v=@{icon-font-version}') format('embedded-opentype'),
-        url('@{icon-font-path}/fontawesome-webfont.woff?v=@{icon-font-version}') format('woff'),
-        url('@{icon-font-path}/fontawesome-webfont.ttf?v=@{icon-font-version}') format('truetype'),
-        url('@{icon-font-path}/fontawesome-webfont.svg#fontawesomeregular?v=@{icon-font-version}') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
+@import "icon.close.less";
 
 //
 // Standard icons
@@ -29,7 +20,7 @@
     line-height: normal;
     vertical-align: baseline;
     background-image: none;
-    background-position: 0% 0%;
+    background-position: 0 0;
     background-repeat: repeat;
     margin-top: 0;
 }

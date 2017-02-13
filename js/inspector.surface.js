@@ -6,139 +6,141 @@
  * element.
  *
  */
-+function ($) { "use strict";
++function ($) {
+    "use strict";
 
     // NAMESPACES
     // ============================
 
-    if ($.oc === undefined)
-        $.oc = {}
+    if (window.Storm === undefined) {
+        window.Storm = {};
+    }
 
-    if ($.oc.inspector === undefined)
-        $.oc.inspector = {}
+    if (Storm.inspector === undefined)
+        Storm.inspector = {};
 
     // CLASS DEFINITION
     // ============================
 
-    var Base = $.oc.foundation.base,
-        BaseProto = Base.prototype
+    var Base = Storm.foundation.base,
+        BaseProto = Base.prototype;
 
     /**
      * Creates the Inspector surface in a container.
      * - containerElement container DOM element
      * - properties array (array of objects)
      * - values - property values, an object
-     * - inspectorUniqueId - a string containing the unique inspector identifier. 
-     *   The identifier should be a constant for an inspectable element. Use 
-     *   $.oc.inspector.helpers.generateElementUniqueId(element) to generate a persistent ID 
-     *   for an element. Use $.oc.inspector.helpers.generateUniqueId() to generate an ID
+     * - inspectorUniqueId - a string containing the unique inspector identifier.
+     *   The identifier should be a constant for an inspectable element. Use
+     *   Storm.inspector.helpers.generateElementUniqueId(element) to generate a persistent ID
+     *   for an element. Use Storm.inspector.helpers.generateUniqueId() to generate an ID
      *   not associated with an element. Inspector uses the ID for storing configuration
      *   related to an element in the document DOM.
      */
-    var Surface = function(containerElement, properties, values, inspectorUniqueId, options, parentSurface, group, propertyName) {
+    var Surface = function (containerElement, properties, values, inspectorUniqueId, options, parentSurface, group, propertyName) {
         if (inspectorUniqueId === undefined) {
             throw new Error('Inspector surface unique ID should be defined.')
         }
 
-        this.options = $.extend({}, Surface.DEFAULTS, typeof options == 'object' && options)
-        this.rawProperties = properties
-        this.parsedProperties = $.oc.inspector.engine.processPropertyGroups(properties)
-        this.container = containerElement
-        this.inspectorUniqueId = inspectorUniqueId
-        this.values = values !== null ? values : {}
-        this.originalValues = $.extend(true, {}, this.values) // Clone the values hash
-        this.idCounter = 1
-        this.popupCounter = 0
-        this.parentSurface = parentSurface
-        this.propertyName = propertyName
+        this.options = $.extend({}, Surface.DEFAULTS, typeof options == 'object' && options);
+        this.rawProperties = properties;
+        this.parsedProperties = Storm.inspector.engine.processPropertyGroups(properties);
+        this.container = containerElement;
+        this.inspectorUniqueId = inspectorUniqueId;
+        this.values = values !== null ? values : {};
+        this.originalValues = $.extend(true, {}, this.values); // Clone the values hash
+        this.idCounter = 1;
+        this.popupCounter = 0;
+        this.parentSurface = parentSurface;
+        this.propertyName = propertyName;
 
-        this.editors = []
-        this.externalParameterEditors = []
-        this.tableContainer = null
-        this.groupManager = null
-        this.group = null
+        this.editors = [];
+        this.externalParameterEditors = [];
+        this.tableContainer = null;
+        this.groupManager = null;
+        this.group = null;
 
         if (group !== undefined) {
             this.group = group
         }
 
         if (!this.parentSurface) {
-            this.groupManager = new $.oc.inspector.groupManager(this.inspectorUniqueId)
+            this.groupManager = new Storm.inspector.groupManager(this.inspectorUniqueId)
         }
 
-        Base.call(this)
+        Base.call(this);
 
         this.init()
-    }
+    };
 
-    Surface.prototype = Object.create(BaseProto)
-    Surface.prototype.constructor = Surface
+    Surface.prototype = Object.create(BaseProto);
+    Surface.prototype.constructor = Surface;
 
-    Surface.prototype.dispose = function() {
-        this.unregisterHandlers()
-        this.disposeControls()
-        this.disposeEditors()
-        this.removeElements()
-        this.disposeExternalParameterEditors()
+    Surface.prototype.dispose = function () {
+        this.unregisterHandlers();
+        this.disposeControls();
+        this.disposeEditors();
+        this.removeElements();
+        this.disposeExternalParameterEditors();
 
-        this.container = null
-        this.tableContainer = null
-        this.rawProperties = null
-        this.parsedProperties = null
-        this.editors = null
-        this.externalParameterEditors = null
-        this.values = null
-        this.originalValues = null
-        this.options.onChange = null
-        this.options.onPopupDisplayed = null
-        this.options.onPopupHidden = null
-        this.options.onGetInspectableElement = null
-        this.parentSurface = null
-        this.groupManager = null
-        this.group = null
+        this.container = null;
+        this.tableContainer = null;
+        this.rawProperties = null;
+        this.parsedProperties = null;
+        this.editors = null;
+        this.externalParameterEditors = null;
+        this.values = null;
+        this.originalValues = null;
+        this.options.onChange = null;
+        this.options.onPopupDisplayed = null;
+        this.options.onPopupHidden = null;
+        this.options.onGetInspectableElement = null;
+        this.parentSurface = null;
+        this.groupManager = null;
+        this.group = null;
 
         BaseProto.dispose.call(this)
-    }
+    };
 
     // INTERNAL METHODS
     // ============================
 
-    Surface.prototype.init = function() {
+    Surface.prototype.init = function () {
         if (this.groupManager && !this.group) {
             this.group = this.groupManager.createGroup('root')
         }
 
-        this.build()
+        this.build();
 
         if (!this.parentSurface) {
-            $.oc.foundation.controlUtils.markDisposable(this.tableContainer)
+            Storm.foundation.controlUtils.markDisposable(this.tableContainer)
         }
 
         this.registerHandlers()
-    }
+    };
 
-    Surface.prototype.registerHandlers = function() {
+    Surface.prototype.registerHandlers = function () {
         if (!this.parentSurface) {
-            $(this.tableContainer).one('dispose-control', this.proxy(this.dispose))
-            $(this.tableContainer).on('click', 'tr.group, tr.control-group', this.proxy(this.onGroupClick))
+            $(this.tableContainer).one('dispose-control', this.proxy(this.dispose));
+            $(this.tableContainer).on('click', 'tr.group, tr.control-group', this.proxy(this.onGroupClick));
             $(this.tableContainer).on('focus-control', this.proxy(this.focusFirstEditor))
         }
-    }
+    };
 
-    Surface.prototype.unregisterHandlers = function() {
+    Surface.prototype.unregisterHandlers = function () {
         if (!this.parentSurface) {
-            $(this.tableContainer).off('dispose-control', this.proxy(this.dispose))
-            $(this.tableContainer).off('click', 'tr.group, tr.control-group', this.proxy(this.onGroupClick))
+            $(this.tableContainer).off('dispose-control', this.proxy(this.dispose));
+            $(this.tableContainer).off('click', 'tr.group, tr.control-group', this.proxy(this.onGroupClick));
             $(this.tableContainer).off('focus-control', this.proxy(this.focusFirstEditor))
         }
-    }
+    };
 
     //
     // Building
     //
 
     /**
-     * Builds the Inspector table. The markup generated by this method looks 
+     * Builds the Inspector table. The markup generated by this method looks
      * like this:
      *
      * <div>
@@ -163,21 +165,21 @@
      *     </table>
      * </div>
      */
-    Surface.prototype.build = function() {
-        this.tableContainer = document.createElement('div')
+    Surface.prototype.build = function () {
+        this.tableContainer = document.createElement('div');
 
         var dataTable = document.createElement('table'),
-            tbody = document.createElement('tbody')
+            tbody = document.createElement('tbody');
 
-        $.oc.foundation.element.addClass(dataTable, 'inspector-fields')
+        Storm.foundation.element.addClass(dataTable, 'inspector-fields');
         if (this.parsedProperties.hasGroups) {
-            $.oc.foundation.element.addClass(dataTable, 'has-groups')
+            Storm.foundation.element.addClass(dataTable, 'has-groups')
         }
 
-        var currentGroup = this.group
+        var currentGroup = this.group;
 
-        for (var i=0, len = this.parsedProperties.properties.length; i < len; i++) {
-            var property = this.parsedProperties.properties[i]
+        for (var i = 0, len = this.parsedProperties.properties.length; i < len; i++) {
+            var property = this.parsedProperties.properties[i];
 
             if (property.itemType == 'group') {
                 currentGroup = this.getGroupManager().createGroup(property.groupIndex, this.group)
@@ -188,7 +190,7 @@
                 }
             }
 
-            var row = this.buildRow(property, currentGroup)
+            var row = this.buildRow(property, currentGroup);
 
             if (property.itemType == 'group') {
                 this.applyGroupLevelToRow(row, currentGroup.parentGroup)
@@ -197,17 +199,17 @@
                 this.applyGroupLevelToRow(row, currentGroup)
             }
 
-            tbody.appendChild(row)
+            tbody.appendChild(row);
 
             // Editor
             //
             this.buildEditor(row, property, dataTable, currentGroup)
         }
 
-        dataTable.appendChild(tbody)
-        this.tableContainer.appendChild(dataTable)
+        dataTable.appendChild(tbody);
+        this.tableContainer.appendChild(dataTable);
 
-        this.container.appendChild(this.tableContainer)
+        this.container.appendChild(this.tableContainer);
 
         if (this.options.enableExternalParameterEditor) {
             this.buildExternalParameterEditor(tbody)
@@ -216,85 +218,85 @@
         if (!this.parentSurface) {
             this.focusFirstEditor()
         }
-    }
+    };
 
-    Surface.prototype.moveToContainer = function(newContainer) {
-        this.container = newContainer
+    Surface.prototype.moveToContainer = function (newContainer) {
+        this.container = newContainer;
 
         this.container.appendChild(this.tableContainer)
-    }
+    };
 
-    Surface.prototype.buildRow = function(property, group) {
+    Surface.prototype.buildRow = function (property, group) {
         var row = document.createElement('tr'),
             th = document.createElement('th'),
             titleSpan = document.createElement('span'),
-            description = this.buildPropertyDescription(property)
+            description = this.buildPropertyDescription(property);
 
         // Table row
         //
         if (property.property) {
-            row.setAttribute('data-property', property.property)
+            row.setAttribute('data-property', property.property);
             row.setAttribute('data-property-path', this.getPropertyPath(property.property))
         }
 
-        this.applyGroupIndexAttribute(property, row, group)
-        $.oc.foundation.element.addClass(row, this.getRowCssClass(property, group))
+        this.applyGroupIndexAttribute(property, row, group);
+        Storm.foundation.element.addClass(row, this.getRowCssClass(property, group));
 
         // Property head
         //
-        this.applyHeadColspan(th, property)
+        this.applyHeadColspan(th, property);
 
-        titleSpan.setAttribute('class', 'title-element')
-        titleSpan.setAttribute('title', this.escapeJavascriptString(property.title))
-        this.buildGroupExpandControl(titleSpan, property, false, false, group)
+        titleSpan.setAttribute('class', 'title-element');
+        titleSpan.setAttribute('title', this.escapeJavascriptString(property.title));
+        this.buildGroupExpandControl(titleSpan, property, false, false, group);
 
-        titleSpan.innerHTML += this.escapeJavascriptString(property.title)
+        titleSpan.innerHTML += this.escapeJavascriptString(property.title);
 
         var outerDiv = document.createElement('div'),
-            innerDiv = document.createElement('div')
+            innerDiv = document.createElement('div');
 
-        innerDiv.appendChild(titleSpan)
+        innerDiv.appendChild(titleSpan);
 
         if (description) {
             innerDiv.appendChild(description)
         }
 
-        outerDiv.appendChild(innerDiv)
-        th.appendChild(outerDiv)
-        row.appendChild(th)
+        outerDiv.appendChild(innerDiv);
+        th.appendChild(outerDiv);
+        row.appendChild(th);
 
         return row
-    }
+    };
 
-    Surface.prototype.focusFirstEditor = function() {
+    Surface.prototype.focusFirstEditor = function () {
         if (this.editors.length == 0) {
             return
         }
 
-        var groupManager = this.getGroupManager()
+        var groupManager = this.getGroupManager();
 
         for (var i = 0, len = this.editors.length; i < len; i++) {
             var editor = this.editors[i],
-                group = editor.parentGroup
+                group = editor.parentGroup;
 
-            if (group && !this.groupManager.isGroupExpanded(group) ) {
+            if (group && !this.groupManager.isGroupExpanded(group)) {
                 continue
             }
 
-            var externalParameterEditor = this.findExternalParameterEditor(editor.getPropertyName())
+            var externalParameterEditor = this.findExternalParameterEditor(editor.getPropertyName());
 
             if (externalParameterEditor && externalParameterEditor.isEditorVisible()) {
-                externalParameterEditor.focus()
+                externalParameterEditor.focus();
                 return
             }
 
-            editor.focus()
+            editor.focus();
             return
         }
-    }
+    };
 
-    Surface.prototype.getRowCssClass = function(property, group) {
-        var result = property.itemType
+    Surface.prototype.getRowCssClass = function (property, group) {
+        var result = property.itemType;
 
         if (property.itemType == 'property') {
             // result += ' grouped'
@@ -308,81 +310,81 @@
         }
 
         return result
-    }
+    };
 
-    Surface.prototype.applyHeadColspan = function(th, property) {
+    Surface.prototype.applyHeadColspan = function (th, property) {
         if (property.itemType == 'group') {
-            th.setAttribute('colspan',  2)
+            th.setAttribute('colspan', 2)
         }
-    }
+    };
 
-    Surface.prototype.buildGroupExpandControl = function(titleSpan, property, force, hasChildSurface, group) {
+    Surface.prototype.buildGroupExpandControl = function (titleSpan, property, force, hasChildSurface, group) {
         if (property.itemType !== 'group' && !force) {
             return
         }
 
         var groupIndex = this.getGroupManager().getGroupIndex(group),
             statusClass = this.getGroupManager().isGroupExpanded(group) ? 'expanded' : '',
-            anchor = document.createElement('a')
+            anchor = document.createElement('a');
 
-        anchor.setAttribute('class', 'expandControl ' + statusClass)
-        anchor.setAttribute('href', 'javascript:;')
-        anchor.innerHTML = '<span>Expand/collapse</span>'
+        anchor.setAttribute('class', 'expandControl ' + statusClass);
+        anchor.setAttribute('href', 'javascript:;');
+        anchor.innerHTML = '<span>Expand/collapse</span>';
 
         titleSpan.appendChild(anchor)
-    }
+    };
 
-    Surface.prototype.buildPropertyDescription = function(property) {
+    Surface.prototype.buildPropertyDescription = function (property) {
         if (property.description === undefined || property.description === null) {
             return null
         }
 
-        var span = document.createElement('span')
-        span.setAttribute('title', this.escapeJavascriptString(property.description))
-        span.setAttribute('class', 'info oc-icon-info with-tooltip')
+        var span = document.createElement('span');
+        span.setAttribute('title', this.escapeJavascriptString(property.description));
+        span.setAttribute('class', 'info oc-icon-info with-tooltip');
 
-        $(span).tooltip({ placement: 'auto right', container: 'body', delay: 500 })
+        $(span).tooltip({placement: 'auto right', container: 'body', delay: 500});
 
         return span
-    }
+    };
 
-    Surface.prototype.buildExternalParameterEditor = function(tbody) {
-        var rows = tbody.children
+    Surface.prototype.buildExternalParameterEditor = function (tbody) {
+        var rows = tbody.children;
 
         for (var i = 0, len = rows.length; i < len; i++) {
             var row = rows[i],
-                property = row.getAttribute('data-property')
+                property = row.getAttribute('data-property');
 
-            if ($.oc.foundation.element.hasClass(row, 'no-external-parameter') || !property) {
+            if (Storm.foundation.element.hasClass(row, 'no-external-parameter') || !property) {
                 continue
             }
 
-            var propertyEditor = this.findPropertyEditor(property)
+            var propertyEditor = this.findPropertyEditor(property);
             if (propertyEditor && !propertyEditor.supportsExternalParameterEditor()) {
                 continue
             }
 
             var cell = row.querySelector('td'),
                 propertyDefinition = this.findPropertyDefinition(property),
-                initialValue = this.getPropertyValue(property)
+                initialValue = this.getPropertyValue(property);
 
             if (initialValue === undefined) {
                 initialValue = propertyEditor.getUndefinedValue()
             }
 
-            var editor = new $.oc.inspector.externalParameterEditor(this, propertyDefinition, cell, initialValue)
+            var editor = new Storm.inspector.externalParameterEditor(this, propertyDefinition, cell, initialValue);
 
             this.externalParameterEditors.push(editor)
         }
-    }
+    };
 
     //
     // Field grouping
     //
 
-    Surface.prototype.applyGroupIndexAttribute = function(property, row, group, isGroupedControl) {
+    Surface.prototype.applyGroupIndexAttribute = function (property, row, group, isGroupedControl) {
         if (property.itemType == 'group' || isGroupedControl) {
-            row.setAttribute('data-group-index', this.getGroupManager().getGroupIndex(group))
+            row.setAttribute('data-group-index', this.getGroupManager().getGroupIndex(group));
             row.setAttribute('data-parent-group-index', this.getGroupManager().getGroupIndex(group.parentGroup))
         }
         else {
@@ -390,142 +392,142 @@
                 row.setAttribute('data-parent-group-index', this.getGroupManager().getGroupIndex(group))
             }
         }
-    }
-    
-    Surface.prototype.applyGroupLevelToRow = function(row, group) {
+    };
+
+    Surface.prototype.applyGroupLevelToRow = function (row, group) {
         if (row.hasAttribute('data-group-level')) {
             return
         }
 
-        var th = this.getRowHeadElement(row)
+        var th = this.getRowHeadElement(row);
 
         if (th === null) {
             throw new Error('Cannot find TH element for the Inspector row')
         }
 
-        var groupLevel = group.getLevel()
+        var groupLevel = group.getLevel();
 
-        row.setAttribute('data-group-level', groupLevel)
-        th.children[0].style.marginLeft = groupLevel*10 + 'px'
-    }
+        row.setAttribute('data-group-level', groupLevel);
+        th.children[0].style.marginLeft = groupLevel * 10 + 'px'
+    };
 
-    Surface.prototype.toggleGroup = function(row, forceExpand) {
+    Surface.prototype.toggleGroup = function (row, forceExpand) {
         var link = row.querySelector('a'),
             groupIndex = row.getAttribute('data-group-index'),
             table = this.getRootTable(),
             groupManager = this.getGroupManager(),
-            collapse = true
+            collapse = true;
 
-        if ($.oc.foundation.element.hasClass(link, 'expanded') && !forceExpand) {
-            $.oc.foundation.element.removeClass(link, 'expanded')
+        if (Storm.foundation.element.hasClass(link, 'expanded') && !forceExpand) {
+            Storm.foundation.element.removeClass(link, 'expanded')
         }
         else {
-            $.oc.foundation.element.addClass(link, 'expanded')
+            Storm.foundation.element.addClass(link, 'expanded');
             collapse = false
         }
 
         var propertyRows = groupManager.findGroupRows(table, groupIndex, !collapse),
-            duration = Math.round(50 / propertyRows.length)
+            duration = Math.round(50 / propertyRows.length);
 
-        this.expandOrCollapseRows(propertyRows, collapse, duration, forceExpand)
+        this.expandOrCollapseRows(propertyRows, collapse, duration, forceExpand);
         groupManager.setGroupStatus(groupIndex, !collapse)
-    }
+    };
 
-    Surface.prototype.expandGroupParents = function(group) {
+    Surface.prototype.expandGroupParents = function (group) {
         var groups = group.getGroupAndAllParents(),
-            table = this.getRootTable()
+            table = this.getRootTable();
 
-        for (var i = groups.length-1; i >= 0; i--) {
-            var row = groups[i].findGroupRow(table)
+        for (var i = groups.length - 1; i >= 0; i--) {
+            var row = groups[i].findGroupRow(table);
 
             if (row) {
                 this.toggleGroup(row, true)
             }
         }
-    }
+    };
 
-    Surface.prototype.expandOrCollapseRows = function(rows, collapse, duration, noAnimation) {
+    Surface.prototype.expandOrCollapseRows = function (rows, collapse, duration, noAnimation) {
         var row = rows.pop(),
-            self = this
+            self = this;
 
         if (row) {
             if (!noAnimation) {
                 setTimeout(function toggleRow() {
-                    $.oc.foundation.element.toggleClass(row, 'collapsed', collapse)
-                    $.oc.foundation.element.toggleClass(row, 'expanded', !collapse)
+                    Storm.foundation.element.toggleClass(row, 'collapsed', collapse);
+                    Storm.foundation.element.toggleClass(row, 'expanded', !collapse);
 
                     self.expandOrCollapseRows(rows, collapse, duration, noAnimation)
                 }, duration)
             }
             else {
-                $.oc.foundation.element.toggleClass(row, 'collapsed', collapse)
-                $.oc.foundation.element.toggleClass(row, 'expanded', !collapse)
+                Storm.foundation.element.toggleClass(row, 'collapsed', collapse);
+                Storm.foundation.element.toggleClass(row, 'expanded', !collapse);
 
                 self.expandOrCollapseRows(rows, collapse, duration, noAnimation)
             }
         }
-    }
+    };
 
-    Surface.prototype.getGroupManager = function() {
+    Surface.prototype.getGroupManager = function () {
         return this.getRootSurface().groupManager
-    }
+    };
 
     //
     // Editors
     //
 
-    Surface.prototype.buildEditor = function(row, property, dataTable, group) {
+    Surface.prototype.buildEditor = function (row, property, dataTable, group) {
         if (property.itemType !== 'property') {
             return
         }
 
-        this.validateEditorType(property.type)
+        this.validateEditorType(property.type);
 
         var cell = document.createElement('td'),
-            type = property.type
+            type = property.type;
 
-        row.appendChild(cell)
+        row.appendChild(cell);
 
         if (type === undefined) {
             type = 'string'
         }
 
-        var editor = new $.oc.inspector.propertyEditors[type](this, property, cell, group)
+        var editor = new Storm.inspector.propertyEditors[type](this, property, cell, group);
 
         if (editor.isGroupedEditor()) {
-            $.oc.foundation.element.addClass(dataTable, 'has-groups')
-            $.oc.foundation.element.addClass(row, 'control-group')
+            Storm.foundation.element.addClass(dataTable, 'has-groups');
+            Storm.foundation.element.addClass(row, 'control-group');
 
-            this.applyGroupIndexAttribute(property, row, editor.group, true)
-            this.buildGroupExpandControl(row.querySelector('span.title-element'), property, true, editor.hasChildSurface(), editor.group)
+            this.applyGroupIndexAttribute(property, row, editor.group, true);
+            this.buildGroupExpandControl(row.querySelector('span.title-element'), property, true, editor.hasChildSurface(), editor.group);
 
             if (cell.children.length == 0) {
                 // If the editor hasn't added any elements to the cell,
                 // and it's a grouped control, remove the cell and
                 // make the group title full-width.
-                row.querySelector('th').setAttribute('colspan', 2)
+                row.querySelector('th').setAttribute('colspan', 2);
                 row.removeChild(cell)
             }
         }
-        
-        this.editors.push(editor)
-    }
 
-    Surface.prototype.generateSequencedId = function() {
-        this.idCounter ++
+        this.editors.push(editor)
+    };
+
+    Surface.prototype.generateSequencedId = function () {
+        this.idCounter++;
 
         return this.inspectorUniqueId + '-' + this.idCounter
-    }
+    };
 
     //
     // Internal API for the editors
     //
 
-    Surface.prototype.getPropertyValue = function(property) {
+    Surface.prototype.getPropertyValue = function (property) {
         return this.values[property]
-    }
+    };
 
-    Surface.prototype.setPropertyValue = function(property, value, supressChangeEvents, forceEditorUpdate) {
+    Surface.prototype.setPropertyValue = function (property, value, supressChangeEvents, forceEditorUpdate) {
         if (value !== undefined) {
             this.values[property] = value
         }
@@ -538,13 +540,13 @@
         if (!supressChangeEvents) {
             if (this.originalValues[property] === undefined || !this.comparePropertyValues(this.originalValues[property], value)) {
                 this.markPropertyChanged(property, true)
-            } 
+            }
             else {
                 this.markPropertyChanged(property, false)
             }
 
-            var propertyPath = this.getPropertyPath(property)
-            this.getRootSurface().notifyEditorsPropertyChanged(propertyPath, value)
+            var propertyPath = this.getPropertyPath(property);
+            this.getRootSurface().notifyEditorsPropertyChanged(propertyPath, value);
 
             if (this.options.onChange !== null) {
                 this.options.onChange(property, value)
@@ -552,16 +554,16 @@
         }
 
         if (forceEditorUpdate) {
-            var editor = this.findPropertyEditor(property)
+            var editor = this.findPropertyEditor(property);
             if (editor) {
                 editor.updateDisplayedValue(value)
             }
         }
 
         return value
-    }
+    };
 
-    Surface.prototype.notifyEditorsPropertyChanged = function(propertyPath, value) {
+    Surface.prototype.notifyEditorsPropertyChanged = function (propertyPath, value) {
         // Editors use this event to watch changes in properties
         // they depend on. All editors should be notified, including 
         // editors in nested surfaces. The property name is passed as a
@@ -570,37 +572,37 @@
         // ['property', 'object.property']
 
         for (var i = 0, len = this.editors.length; i < len; i++) {
-            var editor = this.editors[i]
+            var editor = this.editors[i];
 
-            editor.onInspectorPropertyChanged(propertyPath, value)
+            editor.onInspectorPropertyChanged(propertyPath, value);
             editor.notifyChildSurfacesPropertyChanged(propertyPath, value)
         }
-    }
+    };
 
-    Surface.prototype.makeCellActive = function(cell) {
+    Surface.prototype.makeCellActive = function (cell) {
         var tbody = cell.parentNode.parentNode.parentNode, // cell / row / tbody
-            cells = tbody.querySelectorAll('tr td')
+            cells = tbody.querySelectorAll('tr td');
 
         for (var i = 0, len = cells.length; i < len; i++) {
-            $.oc.foundation.element.removeClass(cells[i], 'active')
+            Storm.foundation.element.removeClass(cells[i], 'active')
         }
 
-        $.oc.foundation.element.addClass(cell, 'active')
-    }
+        Storm.foundation.element.addClass(cell, 'active')
+    };
 
-    Surface.prototype.markPropertyChanged = function(property, changed) {
+    Surface.prototype.markPropertyChanged = function (property, changed) {
         var propertyPath = this.getPropertyPath(property),
-            row = this.tableContainer.querySelector('tr[data-property-path="'+propertyPath+'"]')
+            row = this.tableContainer.querySelector('tr[data-property-path="' + propertyPath + '"]');
 
         if (changed) {
-            $.oc.foundation.element.addClass(row, 'changed')
+            Storm.foundation.element.addClass(row, 'changed')
         }
         else {
-            $.oc.foundation.element.removeClass(row, 'changed')
+            Storm.foundation.element.removeClass(row, 'changed')
         }
-    }
+    };
 
-    Surface.prototype.findPropertyEditor = function(property) {
+    Surface.prototype.findPropertyEditor = function (property) {
         for (var i = 0, len = this.editors.length; i < len; i++) {
             if (this.editors[i].getPropertyName() == property) {
                 return this.editors[i]
@@ -608,9 +610,9 @@
         }
 
         return null
-    }
+    };
 
-    Surface.prototype.findExternalParameterEditor = function(property) {
+    Surface.prototype.findExternalParameterEditor = function (property) {
         for (var i = 0, len = this.externalParameterEditors.length; i < len; i++) {
             if (this.externalParameterEditors[i].getPropertyName() == property) {
                 return this.externalParameterEditors[i]
@@ -618,11 +620,11 @@
         }
 
         return null
-    }
+    };
 
-    Surface.prototype.findPropertyDefinition = function(property) {
-        for (var i=0, len = this.parsedProperties.properties.length; i < len; i++) {
-            var definition = this.parsedProperties.properties[i]
+    Surface.prototype.findPropertyDefinition = function (property) {
+        for (var i = 0, len = this.parsedProperties.properties.length; i < len; i++) {
+            var definition = this.parsedProperties.properties[i];
 
             if (definition.property == property) {
                 return definition
@@ -630,29 +632,29 @@
         }
 
         return null
-    }
+    };
 
-    Surface.prototype.validateEditorType = function(type) {
+    Surface.prototype.validateEditorType = function (type) {
         if (type === undefined) {
             type = 'string'
         }
 
-        if ($.oc.inspector.propertyEditors[type] === undefined) {
-            throw new Error('The Inspector editor class "' + type + 
-                '" is not defined in the $.oc.inspector.propertyEditors namespace.')
+        if (Storm.inspector.propertyEditors[type] === undefined) {
+            throw new Error('The Inspector editor class "' + type +
+                '" is not defined in the Storm.inspector.propertyEditors namespace.')
         }
-    }
+    };
 
-    Surface.prototype.popupDisplayed = function() {
+    Surface.prototype.popupDisplayed = function () {
         if (this.popupCounter === 0 && this.options.onPopupDisplayed !== null) {
             this.options.onPopupDisplayed()
         }
 
         this.popupCounter++
-    }
+    };
 
-    Surface.prototype.popupHidden = function() {
-        this.popupCounter--
+    Surface.prototype.popupHidden = function () {
+        this.popupCounter--;
 
         if (this.popupCounter < 0) {
             this.popupCounter = 0
@@ -661,19 +663,19 @@
         if (this.popupCounter === 0 && this.options.onPopupHidden !== null) {
             this.options.onPopupHidden()
         }
-    }
+    };
 
-    Surface.prototype.getInspectableElement = function() {
+    Surface.prototype.getInspectableElement = function () {
         if (this.options.onGetInspectableElement !== null) {
             return this.options.onGetInspectableElement()
         }
-    }
+    };
 
-    Surface.prototype.getPropertyPath = function(propertyName) {
+    Surface.prototype.getPropertyPath = function (propertyName) {
         var result = [],
-            current = this
+            current = this;
 
-        result.push(propertyName)
+        result.push(propertyName);
 
         while (current) {
             if (current.propertyName) {
@@ -683,31 +685,31 @@
             current = current.parentSurface
         }
 
-        result.reverse()
+        result.reverse();
 
         return result.join('.')
-    }
+    };
 
     //
     // Nested surfaces support
     //
 
-    Surface.prototype.mergeChildSurface = function(surface, mergeAfterRow) {
-        var rows = surface.tableContainer.querySelectorAll('table.inspector-fields > tbody > tr')
+    Surface.prototype.mergeChildSurface = function (surface, mergeAfterRow) {
+        var rows = surface.tableContainer.querySelectorAll('table.inspector-fields > tbody > tr');
 
-        surface.tableContainer = this.getRootSurface().tableContainer
+        surface.tableContainer = this.getRootSurface().tableContainer;
 
-        for (var i = rows.length-1; i >= 0; i--) {
-            var row = rows[i]
+        for (var i = rows.length - 1; i >= 0; i--) {
+            var row = rows[i];
 
-            mergeAfterRow.parentNode.insertBefore(row, mergeAfterRow.nextSibling)
+            mergeAfterRow.parentNode.insertBefore(row, mergeAfterRow.nextSibling);
             this.applyGroupLevelToRow(row, surface.group)
         }
-    }
+    };
 
-    Surface.prototype.getRowHeadElement = function(row) {
-        for (var i = row.children.length-1; i >= 0; i--) {
-            var element = row.children[i]
+    Surface.prototype.getRowHeadElement = function (row) {
+        for (var i = row.children.length - 1; i >= 0; i--) {
+            var element = row.children[i];
 
             if (element.tagName === 'TH') {
                 return element
@@ -715,14 +717,14 @@
         }
 
         return null
-    }
+    };
 
-    Surface.prototype.getInspectorUniqueId = function() {
+    Surface.prototype.getInspectorUniqueId = function () {
         return this.inspectorUniqueId
-    }
+    };
 
-    Surface.prototype.getRootSurface = function() {
-        var current = this
+    Surface.prototype.getRootSurface = function () {
+        var current = this;
 
         while (current) {
             if (!current.parentSurface) {
@@ -731,53 +733,53 @@
 
             current = current.parentSurface
         }
-    }
+    };
 
     //
     // Disposing
     //
 
-    Surface.prototype.removeElements = function() {
+    Surface.prototype.removeElements = function () {
         if (!this.parentSurface) {
             this.tableContainer.parentNode.removeChild(this.tableContainer);
         }
-    }
+    };
 
-    Surface.prototype.disposeEditors = function() {
+    Surface.prototype.disposeEditors = function () {
         for (var i = 0, len = this.editors.length; i < len; i++) {
-            var editor = this.editors[i]
+            var editor = this.editors[i];
 
             editor.dispose()
         }
-    }
+    };
 
-    Surface.prototype.disposeExternalParameterEditors = function() {
+    Surface.prototype.disposeExternalParameterEditors = function () {
         for (var i = 0, len = this.externalParameterEditors.length; i < len; i++) {
-            var editor = this.externalParameterEditors[i]
+            var editor = this.externalParameterEditors[i];
 
             editor.dispose()
         }
-    }
+    };
 
-    Surface.prototype.disposeControls = function() {
-        var tooltipControls = this.tableContainer.querySelectorAll('.with-tooltip')
+    Surface.prototype.disposeControls = function () {
+        var tooltipControls = this.tableContainer.querySelectorAll('.with-tooltip');
 
         for (var i = 0, len = tooltipControls.length; i < len; i++) {
             $(tooltipControls[i]).tooltip('destroy')
         }
-    }
+    };
 
     //
     // Helpers
     //
 
-    Surface.prototype.escapeJavascriptString = function(str) {
-        var div = document.createElement('div')
-        div.appendChild(document.createTextNode(str))
+    Surface.prototype.escapeJavascriptString = function (str) {
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(str));
         return div.innerHTML
-    }
+    };
 
-    Surface.prototype.comparePropertyValues = function(oldValue, newValue) {
+    Surface.prototype.comparePropertyValues = function (oldValue, newValue) {
         if (oldValue === undefined && newValue !== undefined) {
             return false
         }
@@ -791,33 +793,33 @@
         }
 
         return oldValue == newValue
-    }
+    };
 
-    Surface.prototype.getRootTable = function() {
+    Surface.prototype.getRootTable = function () {
         return this.getRootSurface().container.querySelector('table.inspector-fields')
-    }
+    };
 
     //
     // External API
     //
 
-    Surface.prototype.getValues = function() {
-        var result = {}
+    Surface.prototype.getValues = function () {
+        var result = {};
 
-        for (var i=0, len = this.parsedProperties.properties.length; i < len; i++) {
-            var property = this.parsedProperties.properties[i]
+        for (var i = 0, len = this.parsedProperties.properties.length; i < len; i++) {
+            var property = this.parsedProperties.properties[i];
 
             if (property.itemType !== 'property') {
                 continue
             }
 
             var value = null,
-                externalParameterEditor = this.findExternalParameterEditor(property.property)
+                externalParameterEditor = this.findExternalParameterEditor(property.property);
 
             if (!externalParameterEditor || !externalParameterEditor.isEditorVisible()) {
-                value = this.getPropertyValue(property.property)
+                value = this.getPropertyValue(property.property);
 
-                var editor = this.findPropertyEditor(property.property)
+                var editor = this.findPropertyEditor(property.property);
 
                 if (value === undefined) {
                     if (editor) {
@@ -828,7 +830,7 @@
                     }
                 }
 
-                if (value === $.oc.inspector.removedProperty) {
+                if (value === Storm.inspector.removedProperty) {
                     continue
                 }
 
@@ -847,9 +849,9 @@
                         continue
                     }
                 }
-            } 
+            }
             else {
-                value = externalParameterEditor.getValue()
+                value = externalParameterEditor.getValue();
                 value = '{{ ' + value + ' }}'
             }
 
@@ -857,27 +859,27 @@
         }
 
         return result
-    }
+    };
 
-    Surface.prototype.getValidValues = function() {
+    Surface.prototype.getValidValues = function () {
         var allValues = this.getValues(),
-            result = {}
+            result = {};
 
         for (var property in allValues) {
-            var editor = this.findPropertyEditor(property)
+            var editor = this.findPropertyEditor(property);
 
             if (!editor) {
                 throw new Error('Cannot find editor for property ' + property)
             }
 
-            var externalEditor = this.findExternalParameterEditor(property)
+            var externalEditor = this.findExternalParameterEditor(property);
             if (externalEditor && externalEditor.isEditorVisible() && !externalEditor.validate(true)) {
-                result[property] = $.oc.inspector.invalidProperty
+                result[property] = Storm.inspector.invalidProperty;
                 continue
             }
 
             if (!editor.validate(true)) {
-                result[property] = $.oc.inspector.invalidProperty
+                result[property] = Storm.inspector.invalidProperty;
                 continue
             }
 
@@ -885,14 +887,14 @@
         }
 
         return result
-    }
+    };
 
-    Surface.prototype.validate = function(silentMode) {
-        this.getGroupManager().unmarkInvalidGroups(this.getRootTable())
+    Surface.prototype.validate = function (silentMode) {
+        this.getGroupManager().unmarkInvalidGroups(this.getRootTable());
 
         for (var i = 0, len = this.editors.length; i < len; i++) {
             var editor = this.editors[i],
-                externalEditor = this.findExternalParameterEditor(editor.propertyDefinition.property)
+                externalEditor = this.findExternalParameterEditor(editor.propertyDefinition.property);
 
             if (externalEditor && externalEditor.isEditorVisible()) {
                 if (!externalEditor.validate(silentMode)) {
@@ -915,25 +917,25 @@
         }
 
         return true
-    }
+    };
 
-    Surface.prototype.hasChanges = function(originalValues) {
-        var values = originalValues !== undefined ? originalValues : this.originalValues
+    Surface.prototype.hasChanges = function (originalValues) {
+        var values = originalValues !== undefined ? originalValues : this.originalValues;
 
         return !this.comparePropertyValues(values, this.getValues())
-    }
+    };
 
     // EVENT HANDLERS
     //
 
-    Surface.prototype.onGroupClick = function(ev) {
-        var row = ev.currentTarget
+    Surface.prototype.onGroupClick = function (ev) {
+        var row = ev.currentTarget;
 
-        this.toggleGroup(row)
+        this.toggleGroup(row);
 
-        $.oc.foundation.event.stop(ev)
+        Storm.foundation.event.stop(ev);
         return false
-    }
+    };
 
     // DEFAULT OPTIONS
     // ============================
@@ -944,12 +946,12 @@
         onPopupDisplayed: null,
         onPopupHidden: null,
         onGetInspectableElement: null
-    }
+    };
 
     // REGISTRATION
     // ============================
 
-    $.oc.inspector.surface = Surface
-    $.oc.inspector.removedProperty = {removed: true}
-    $.oc.inspector.invalidProperty = {invalid: true}
+    Storm.inspector.surface = Surface;
+    Storm.inspector.removedProperty = {removed: true};
+    Storm.inspector.invalidProperty = {invalid: true}
 }(window.jQuery);

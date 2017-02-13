@@ -1,57 +1,58 @@
 /*
  * Inspector dictionary editor class.
  */
-+function ($) { "use strict";
++function ($) {
+    "use strict";
 
-    var Base = $.oc.inspector.propertyEditors.popupBase,
-        BaseProto = Base.prototype
+    var Base = Storm.inspector.propertyEditors.popupBase,
+        BaseProto = Base.prototype;
 
-    var DictionaryEditor = function(inspector, propertyDefinition, containerCell, group) {
-        this.keyValidationSet = null
-        this.valueValidationSet = null
+    var DictionaryEditor = function (inspector, propertyDefinition, containerCell, group) {
+        this.keyValidationSet = null;
+        this.valueValidationSet = null;
 
         Base.call(this, inspector, propertyDefinition, containerCell, group)
-    }
+    };
 
-    DictionaryEditor.prototype = Object.create(BaseProto)
-    DictionaryEditor.prototype.constructor = Base
+    DictionaryEditor.prototype = Object.create(BaseProto);
+    DictionaryEditor.prototype.constructor = Base;
 
-    DictionaryEditor.prototype.dispose = function() {
-        this.disposeValidators()
-        
-        this.keyValidationSet = null
-        this.valueValidationSet = null
+    DictionaryEditor.prototype.dispose = function () {
+        this.disposeValidators();
+
+        this.keyValidationSet = null;
+        this.valueValidationSet = null;
 
         BaseProto.dispose.call(this)
-    }
+    };
 
-    DictionaryEditor.prototype.init = function() {
-        this.initValidators()
+    DictionaryEditor.prototype.init = function () {
+        this.initValidators();
 
         BaseProto.init.call(this)
-    }
+    };
 
-    DictionaryEditor.prototype.supportsExternalParameterEditor = function() {
+    DictionaryEditor.prototype.supportsExternalParameterEditor = function () {
         return false
-    }
+    };
 
     //
     // Popup editor methods
     //
 
-    DictionaryEditor.prototype.setLinkText = function(link, value) {
-        var value = value !== undefined ? value 
-                : this.inspector.getPropertyValue(this.propertyDefinition.property)
+    DictionaryEditor.prototype.setLinkText = function (link, value) {
+        var value = value !== undefined ? value
+            : this.inspector.getPropertyValue(this.propertyDefinition.property);
 
         if (value === undefined) {
             value = this.propertyDefinition.default
         }
 
         if (value === undefined || $.isEmptyObject(value)) {
-            var placeholder = this.propertyDefinition.placeholder
+            var placeholder = this.propertyDefinition.placeholder;
 
             if (placeholder !== undefined) {
-                $.oc.foundation.element.addClass(link, 'placeholder')
+                Storm.foundation.element.addClass(link, 'placeholder');
                 link.textContent = placeholder
             }
             else {
@@ -63,14 +64,14 @@
                 this.throwError('Object list value should be an object.')
             }
 
-            var itemCount = this.getValueKeys(value).length
+            var itemCount = this.getValueKeys(value).length;
 
-            $.oc.foundation.element.removeClass(link, 'placeholder')
+            Storm.foundation.element.removeClass(link, 'placeholder');
             link.textContent = 'Items: ' + itemCount
         }
-    }
+    };
 
-    DictionaryEditor.prototype.getPopupContent = function() {
+    DictionaryEditor.prototype.getPopupContent = function () {
         return '<form>                                                                                  \
                 <div class="modal-header">                                                              \
                     <button type="button" class="close" data-dismiss="popup">&times;</button>           \
@@ -118,333 +119,333 @@
                     <button type="button" class="btn btn-default" data-dismiss="popup">Cancel</button>  \
                 </div>                                                                                  \
                 </form>'
-    }
+    };
 
-    DictionaryEditor.prototype.configurePopup = function(popup) {
-        this.buildItemsTable(popup.get(0))
+    DictionaryEditor.prototype.configurePopup = function (popup) {
+        this.buildItemsTable(popup.get(0));
 
         this.focusFirstInput()
-    }
+    };
 
-    DictionaryEditor.prototype.handleSubmit = function($form) {
+    DictionaryEditor.prototype.handleSubmit = function ($form) {
         return this.applyValues()
-    }
+    };
 
     //
     // Building and row management
     //
 
-    DictionaryEditor.prototype.buildItemsTable = function(popup) {
+    DictionaryEditor.prototype.buildItemsTable = function (popup) {
         var table = popup.querySelector('table.inspector-dictionary-table'),
             tbody = document.createElement('tbody'),
             items = this.inspector.getPropertyValue(this.propertyDefinition.property),
-            titleProperty = this.propertyDefinition.titleProperty
+            titleProperty = this.propertyDefinition.titleProperty;
 
         if (items === undefined) {
             items = this.propertyDefinition.default
         }
 
         if (items === undefined || this.getValueKeys(items).length === 0) {
-            var row = this.buildEmptyRow()
+            var row = this.buildEmptyRow();
 
             tbody.appendChild(row)
         }
         else {
             for (var key in items) {
-                var row = this.buildTableRow(key, items[key])
+                var row = this.buildTableRow(key, items[key]);
 
                 tbody.appendChild(row)
             }
         }
 
-        table.appendChild(tbody)
+        table.appendChild(tbody);
         this.updateScrollpads()
-    }
+    };
 
-    DictionaryEditor.prototype.buildTableRow = function(key, value) {
+    DictionaryEditor.prototype.buildTableRow = function (key, value) {
         var row = document.createElement('tr'),
             keyCell = document.createElement('td'),
-            valueCell = document.createElement('td')
+            valueCell = document.createElement('td');
 
-        this.createInput(keyCell, key)
-        this.createInput(valueCell, value)
+        this.createInput(keyCell, key);
+        this.createInput(valueCell, value);
 
-        row.appendChild(keyCell)
-        row.appendChild(valueCell)
+        row.appendChild(keyCell);
+        row.appendChild(valueCell);
 
         return row
-    }
+    };
 
-    DictionaryEditor.prototype.buildEmptyRow = function() {
+    DictionaryEditor.prototype.buildEmptyRow = function () {
         return this.buildTableRow(null, null)
-    }
+    };
 
-    DictionaryEditor.prototype.createInput = function(container, value) {
+    DictionaryEditor.prototype.createInput = function (container, value) {
         var input = document.createElement('input'),
-            controlContainer = document.createElement('div')
+            controlContainer = document.createElement('div');
 
-        input.setAttribute('type', 'text')
-        input.setAttribute('class', 'form-control')
-        input.value = value
+        input.setAttribute('type', 'text');
+        input.setAttribute('class', 'form-control');
+        input.value = value;
 
-        controlContainer.appendChild(input)
+        controlContainer.appendChild(input);
         container.appendChild(controlContainer)
-    }
+    };
 
-    DictionaryEditor.prototype.setActiveCell = function(input) {
-        var activeCells = this.popup.querySelectorAll('td.active')
+    DictionaryEditor.prototype.setActiveCell = function (input) {
+        var activeCells = this.popup.querySelectorAll('td.active');
 
-        for (var i = activeCells.length-1; i >= 0; i--) {
-            $.oc.foundation.element.removeClass(activeCells[i], 'active')
+        for (var i = activeCells.length - 1; i >= 0; i--) {
+            Storm.foundation.element.removeClass(activeCells[i], 'active')
         }
 
-        var activeCell = input.parentNode.parentNode // input / div / td
-        $.oc.foundation.element.addClass(activeCell, 'active')
-    }
+        var activeCell = input.parentNode.parentNode; // input / div / td
+        Storm.foundation.element.addClass(activeCell, 'active')
+    };
 
-    DictionaryEditor.prototype.createItem = function() {
+    DictionaryEditor.prototype.createItem = function () {
         var activeRow = this.getActiveRow(),
             newRow = this.buildEmptyRow(),
             tbody = this.getTableBody(),
-            nextSibling = activeRow ? activeRow.nextElementSibling : null
+            nextSibling = activeRow ? activeRow.nextElementSibling : null;
 
-        tbody.insertBefore(newRow, nextSibling)
+        tbody.insertBefore(newRow, nextSibling);
 
-        this.focusAndMakeActive(newRow.querySelector('input'))
+        this.focusAndMakeActive(newRow.querySelector('input'));
         this.updateScrollpads()
-    }
+    };
 
-    DictionaryEditor.prototype.deleteItem = function() {
+    DictionaryEditor.prototype.deleteItem = function () {
         var activeRow = this.getActiveRow(),
-            tbody = this.getTableBody()
+            tbody = this.getTableBody();
 
         if (!activeRow) {
             return
         }
 
         var nextRow = activeRow.nextElementSibling,
-            prevRow = activeRow.previousElementSibling
+            prevRow = activeRow.previousElementSibling;
 
-        tbody.removeChild(activeRow)
+        tbody.removeChild(activeRow);
 
-        var newSelectedRow = nextRow ? nextRow : prevRow
+        var newSelectedRow = nextRow ? nextRow : prevRow;
 
         if (!newSelectedRow) {
-            newSelectedRow = this.buildEmptyRow()
+            newSelectedRow = this.buildEmptyRow();
             tbody.appendChild(newSelectedRow)
         }
 
-        this.focusAndMakeActive(newSelectedRow .querySelector('input'))
+        this.focusAndMakeActive(newSelectedRow.querySelector('input'));
         this.updateScrollpads()
-    }
+    };
 
-    DictionaryEditor.prototype.applyValues = function() {
+    DictionaryEditor.prototype.applyValues = function () {
         var tbody = this.getTableBody(),
             dataRows = tbody.querySelectorAll('tr'),
             link = this.getLink(),
-            result = {}
+            result = {};
 
         for (var i = 0, len = dataRows.length; i < len; i++) {
             var dataRow = dataRows[i],
                 keyInput = this.getRowInputByIndex(dataRow, 0),
                 valueInput = this.getRowInputByIndex(dataRow, 1),
                 key = $.trim(keyInput.value),
-                value = $.trim(valueInput.value)
+                value = $.trim(valueInput.value);
 
             if (key.length == 0 && value.length == 0) {
                 continue
             }
 
             if (key.length == 0) {
-                $.oc.flashMsg({text: 'The key cannot be empty.', 'class': 'error', 'interval': 3})
-                this.focusAndMakeActive(keyInput)
+                Storm.flashMsg({text: 'The key cannot be empty.', 'class': 'error', 'interval': 3});
+                this.focusAndMakeActive(keyInput);
                 return false
             }
 
             if (value.length == 0) {
-                $.oc.flashMsg({text: 'The value cannot be empty.', 'class': 'error', 'interval': 3})
-                this.focusAndMakeActive(valueInput)
+                Storm.flashMsg({text: 'The value cannot be empty.', 'class': 'error', 'interval': 3});
+                this.focusAndMakeActive(valueInput);
                 return false
             }
 
             if (result[key] !== undefined) {
-                $.oc.flashMsg({text: 'Keys should be unique.', 'class': 'error', 'interval': 3})
-                this.focusAndMakeActive(keyInput)
-                return false
-            }
-        
-            var validationResult = this.keyValidationSet.validate(key)
-            if (validationResult !== null) {
-                $.oc.flashMsg({text: validationResult, 'class': 'error', 'interval': 5})
+                Storm.flashMsg({text: 'Keys should be unique.', 'class': 'error', 'interval': 3});
+                this.focusAndMakeActive(keyInput);
                 return false
             }
 
-            validationResult = this.valueValidationSet.validate(value)
+            var validationResult = this.keyValidationSet.validate(key);
             if (validationResult !== null) {
-                $.oc.flashMsg({text: validationResult, 'class': 'error', 'interval': 5})
+                Storm.flashMsg({text: validationResult, 'class': 'error', 'interval': 5});
+                return false
+            }
+
+            validationResult = this.valueValidationSet.validate(value);
+            if (validationResult !== null) {
+                Storm.flashMsg({text: validationResult, 'class': 'error', 'interval': 5});
                 return false
             }
 
             result[key] = value
         }
 
-        this.inspector.setPropertyValue(this.propertyDefinition.property, result)
+        this.inspector.setPropertyValue(this.propertyDefinition.property, result);
         this.setLinkText(link, result)
-    }
+    };
 
     //
     // Helpers
     //
 
-    DictionaryEditor.prototype.getValueKeys = function(value) {
-        var result = []
+    DictionaryEditor.prototype.getValueKeys = function (value) {
+        var result = [];
 
         for (var key in value) {
             result.push(key)
         }
 
         return result
-    }
+    };
 
-    DictionaryEditor.prototype.getActiveRow = function() {
-        var activeCell = this.popup.querySelector('td.active')
+    DictionaryEditor.prototype.getActiveRow = function () {
+        var activeCell = this.popup.querySelector('td.active');
 
         if (!activeCell) {
             return null
         }
 
         return activeCell.parentNode
-    }
+    };
 
-    DictionaryEditor.prototype.getTableBody = function() {
+    DictionaryEditor.prototype.getTableBody = function () {
         return this.popup.querySelector('table.inspector-dictionary-table tbody')
-    }
+    };
 
-    DictionaryEditor.prototype.updateScrollpads = function() {
+    DictionaryEditor.prototype.updateScrollpads = function () {
         $('.control-scrollpad', this.popup).scrollpad('update')
-    }
+    };
 
-    DictionaryEditor.prototype.focusFirstInput = function() {
-        var input = this.popup.querySelector('td input')
+    DictionaryEditor.prototype.focusFirstInput = function () {
+        var input = this.popup.querySelector('td input');
 
         if (input) {
-            input.focus()
+            input.focus();
             this.setActiveCell(input)
         }
-    }
+    };
 
-    DictionaryEditor.prototype.getEditorCell = function(cell) {
-        return cell.parentNode.parentNode // cell / div / td
-    }
+    DictionaryEditor.prototype.getEditorCell = function (cell) {
+        return cell.parentNode.parentNode; // cell / div / td
+    };
 
-    DictionaryEditor.prototype.getEditorRow = function(cell) {
-        return cell.parentNode.parentNode.parentNode // cell / div / td / tr
-    }
+    DictionaryEditor.prototype.getEditorRow = function (cell) {
+        return cell.parentNode.parentNode.parentNode; // cell / div / td / tr
+    };
 
-    DictionaryEditor.prototype.focusAndMakeActive = function(input) {
-        input.focus()
+    DictionaryEditor.prototype.focusAndMakeActive = function (input) {
+        input.focus();
         this.setActiveCell(input)
-    }
+    };
 
-    DictionaryEditor.prototype.getRowInputByIndex = function(row, index) {
+    DictionaryEditor.prototype.getRowInputByIndex = function (row, index) {
         return row.cells[index].querySelector('input')
-    }
+    };
 
     //
     // Navigation
     //
 
-    DictionaryEditor.prototype.navigateDown = function(ev) {
+    DictionaryEditor.prototype.navigateDown = function (ev) {
         var cell = this.getEditorCell(ev.currentTarget),
             row = this.getEditorRow(ev.currentTarget),
-            nextRow = row.nextElementSibling
+            nextRow = row.nextElementSibling;
 
         if (!nextRow) {
             return
         }
 
-        var newActiveEditor = nextRow.cells[cell.cellIndex].querySelector('input')
+        var newActiveEditor = nextRow.cells[cell.cellIndex].querySelector('input');
 
         this.focusAndMakeActive(newActiveEditor)
-    }
+    };
 
-    DictionaryEditor.prototype.navigateUp = function(ev) {
+    DictionaryEditor.prototype.navigateUp = function (ev) {
         var cell = this.getEditorCell(ev.currentTarget),
             row = this.getEditorRow(ev.currentTarget),
-            prevRow = row.previousElementSibling
+            prevRow = row.previousElementSibling;
 
         if (!prevRow) {
             return
         }
 
-        var newActiveEditor = prevRow.cells[cell.cellIndex].querySelector('input')
+        var newActiveEditor = prevRow.cells[cell.cellIndex].querySelector('input');
 
         this.focusAndMakeActive(newActiveEditor)
-    }
+    };
 
     //
     // Validation
     //
 
-    DictionaryEditor.prototype.initValidators = function() {
-        this.keyValidationSet = new $.oc.inspector.validationSet({
+    DictionaryEditor.prototype.initValidators = function () {
+        this.keyValidationSet = new Storm.inspector.validationSet({
             validation: this.propertyDefinition.validationKey
-        }, this.propertyDefinition.property+'.validationKey')
+        }, this.propertyDefinition.property + '.validationKey');
 
-        this.valueValidationSet = new $.oc.inspector.validationSet({
+        this.valueValidationSet = new Storm.inspector.validationSet({
             validation: this.propertyDefinition.validationValue
-        }, this.propertyDefinition.property+'.validationValue')
-    }
+        }, this.propertyDefinition.property + '.validationValue')
+    };
 
-    DictionaryEditor.prototype.disposeValidators = function() {
-        this.keyValidationSet.dispose()
+    DictionaryEditor.prototype.disposeValidators = function () {
+        this.keyValidationSet.dispose();
         this.valueValidationSet.dispose()
-    }
+    };
 
     //
     // Event handlers
     //
 
-    DictionaryEditor.prototype.onPopupShown = function(ev, link, popup) {
-        BaseProto.onPopupShown.call(this,ev, link, popup )
+    DictionaryEditor.prototype.onPopupShown = function (ev, link, popup) {
+        BaseProto.onPopupShown.call(this, ev, link, popup);
 
-        popup.on('focus.inspector', 'td input', this.proxy(this.onFocus))
-        popup.on('keydown.inspector', 'td input', this.proxy(this.onKeyDown))
+        popup.on('focus.inspector', 'td input', this.proxy(this.onFocus));
+        popup.on('keydown.inspector', 'td input', this.proxy(this.onKeyDown));
         popup.on('click.inspector', '[data-cmd]', this.proxy(this.onCommand))
-    }
+    };
 
-    DictionaryEditor.prototype.onPopupHidden = function(ev, link, popup) {
-        popup.off('.inspector', 'td input')
-        popup.off('.inspector', '[data-cmd]', this.proxy(this.onCommand))
+    DictionaryEditor.prototype.onPopupHidden = function (ev, link, popup) {
+        popup.off('.inspector', 'td input');
+        popup.off('.inspector', '[data-cmd]', this.proxy(this.onCommand));
 
         BaseProto.onPopupHidden.call(this, ev, link, popup)
-    }
+    };
 
-    DictionaryEditor.prototype.onFocus = function(ev) {
+    DictionaryEditor.prototype.onFocus = function (ev) {
         this.setActiveCell(ev.currentTarget)
-    }
+    };
 
-    DictionaryEditor.prototype.onCommand = function(ev) {
-        var command = ev.currentTarget.getAttribute('data-cmd')
+    DictionaryEditor.prototype.onCommand = function (ev) {
+        var command = ev.currentTarget.getAttribute('data-cmd');
 
         switch (command) {
-            case 'create-item' : 
-                this.createItem()
-            break;
-            case 'delete-item' : 
-                this.deleteItem()
-            break;
+            case 'create-item' :
+                this.createItem();
+                break;
+            case 'delete-item' :
+                this.deleteItem();
+                break;
         }
-    }
+    };
 
-    DictionaryEditor.prototype.onKeyDown = function(ev) {
+    DictionaryEditor.prototype.onKeyDown = function (ev) {
         if (ev.keyCode == 40) {
             return this.navigateDown(ev)
         }
         else if (ev.keyCode == 38) {
             return this.navigateUp(ev)
         }
-    }
+    };
 
-    $.oc.inspector.propertyEditors.dictionary = DictionaryEditor
+    Storm.inspector.propertyEditors.dictionary = DictionaryEditor
 }(window.jQuery);

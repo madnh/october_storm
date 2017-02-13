@@ -12,7 +12,7 @@
  *
  * Use the simple parasitic combination inheritance pattern to create child classes:
  * 
- * var Base = $.oc.foundation.base,
+ * var Base = Storm.foundation.base,
  *     BaseProto = Base.prototype
  *
  * var SubClass = function(params) {
@@ -38,42 +38,43 @@
  * - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Introduction_to_Object-Oriented_JavaScript
  *
  */
-+function ($) { "use strict";
-    if ($.oc === undefined)
-        $.oc = {}
++function ($) {
+    "use strict";
+    if (window.Storm === undefined)
+        window.Storm = {};
 
-    if ($.oc.foundation === undefined)
-        $.oc.foundation = {}
+    if (Storm.foundation === undefined)
+        Storm.foundation = {};
 
-    $.oc.foundation._proxyCounter = 0
+    Storm.foundation._proxyCounter = 0;
 
-    var Base = function() {
+    var Base = function () {
         this.proxiedMethods = {}
-    }
+    };
 
-    Base.prototype.dispose = function() {
+    Base.prototype.dispose = function () {
         for (var key in this.proxiedMethods) {
             this.proxiedMethods[key] = null
         }
 
         this.proxiedMethods = null
-    }
+    };
 
     /*
      * Creates a proxied method reference or returns an existing proxied method.
      */
-    Base.prototype.proxy = function(method) {
+    Base.prototype.proxy = function (method) {
         if (method.ocProxyId === undefined) {
-            $.oc.foundation._proxyCounter++
-            method.ocProxyId = $.oc.foundation._proxyCounter
+            Storm.foundation._proxyCounter++;
+            method.ocProxyId = Storm.foundation._proxyCounter
         }
 
         if (this.proxiedMethods[method.ocProxyId] !== undefined)
-            return this.proxiedMethods[method.ocProxyId]
+            return this.proxiedMethods[method.ocProxyId];
 
-        this.proxiedMethods[method.ocProxyId] = method.bind(this)
+        this.proxiedMethods[method.ocProxyId] = method.bind(this);
         return this.proxiedMethods[method.ocProxyId]
-    }
+    };
 
-    $.oc.foundation.base = Base;
+    Storm.foundation.base = Base;
 }(window.jQuery);

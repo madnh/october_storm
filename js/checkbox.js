@@ -3,60 +3,60 @@
  *
  */
 
-(function($) {
+(function ($) {
 
-    $(document).on('keydown', 'div.custom-checkbox', function(e) {
+    $(document).on('keydown', 'div.custom-checkbox', function (e) {
         if (e.keyCode == 32)
             e.preventDefault()
-    })
+    });
 
-    $(document).on('keyup', 'div.custom-checkbox', function(e) {
+    $(document).on('keyup', 'div.custom-checkbox', function (e) {
         if (e.keyCode == 32) {
-            var $cb = $('input', this)
+            var $cb = $('input', this);
 
             if ($cb.data('oc-space-timestamp') == e.timeStamp)
-                return
+                return;
 
-            $cb.get(0).checked = !$cb.get(0).checked
-            $cb.data('oc-space-timestamp', e.timeStamp)
-            $cb.trigger('change')
+            $cb.get(0).checked = !$cb.get(0).checked;
+            $cb.data('oc-space-timestamp', e.timeStamp);
+            $cb.trigger('change');
             return false
         }
-    })
+    });
 
     //
     // Intermediate checkboxes
     //
 
-    $(document).render(function() {
-        $('div.custom-checkbox.is-indeterminate > input').each(function() {
+    $(document).on('render', function () {
+        $('div.custom-checkbox.is-indeterminate > input').each(function () {
             var $el = $(this),
-                checked = $el.data('checked')
+                checked = $el.data('checked');
 
             switch (checked) {
 
                 // Unchecked
                 case 1:
-                    $el.prop('indeterminate', true)
-                    break
+                    $el.prop('indeterminate', true);
+                    break;
 
                 // Checked
                 case 2:
-                    $el.prop('indeterminate', false)
-                    $el.prop('checked', true)
-                    break
+                    $el.prop('indeterminate', false);
+                    $el.prop('checked', true);
+                    break;
 
                 // Unchecked
                 default:
-                    $el.prop('indeterminate', false)
+                    $el.prop('indeterminate', false);
                     $el.prop('checked', false)
             }
         })
-    })
+    });
 
-    $(document).on('click', 'div.custom-checkbox.is-indeterminate > label', function() {
+    $(document).on('click', 'div.custom-checkbox.is-indeterminate > label', function () {
         var $el = $(this).parent().find('input:first'),
-            checked = $el.data('checked')
+            checked = $el.data('checked');
 
         if (checked === undefined) {
             checked = $el.is(':checked') ? 1 : 0
@@ -66,25 +66,25 @@
 
             // Unchecked, going indeterminate
             case 0:
-                $el.data('checked', 1)
-                $el.prop('indeterminate', true)
-                break
+                $el.data('checked', 1);
+                $el.prop('indeterminate', true);
+                break;
 
             // Indeterminate, going checked
             case 1:
-                $el.data('checked', 2)
-                $el.prop('indeterminate', false)
-                $el.prop('checked', true)
-                break
+                $el.data('checked', 2);
+                $el.prop('indeterminate', false);
+                $el.prop('checked', true);
+                break;
 
             // Checked, going unchecked
             default:
-                $el.data('checked', 0)
-                $el.prop('indeterminate', false)
+                $el.data('checked', 0);
+                $el.prop('indeterminate', false);
                 $el.prop('checked', false)
         }
 
-        $el.trigger('change')
+        $el.trigger('change');
         return false
     })
 

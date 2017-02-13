@@ -48,7 +48,7 @@
 
         &:after {
             position: absolute;
-            .icon(@search);
+            .icon(@fa-var-search);
             right: 13px;
             top: 9px;
             color: #95a5a6;
@@ -154,18 +154,9 @@
 
     &.select2-container--open {
         //
-        // Make the dropdown arrow point up while the dropdown is visible.
-        //
-        .select2-selection .select2-selection__arrow b {
-            &:before {
-                .icon(@angle-up);
-            }
-        }
-
-        //
         // Handle border radii of the container when the dropdown is showing.
         //
-        &.select2-container--below {
+        .select2-container--below {
             .select2-selection:not(.select-no-dropdown) {
                 .border-bottom-radius(0);
                 border-bottom-color: transparent;
@@ -275,7 +266,7 @@
                 margin-top: -5px;
                 line-height: 9px;
                 &:before {
-                    .icon(@angle-down);
+                    .icon(@fa-var-angle-down);
                     display: inline-block;
                 }
             }

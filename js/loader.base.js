@@ -15,66 +15,67 @@
  * $('#buttons').loadIndicator({ text: 'Saving...' }) - display the indicator in a transparent state
  * $('#buttons').loadIndicator('hide') - display the indicator
  */
-+function ($) { "use strict";
++function ($) {
+    "use strict";
 
     var LoadIndicator = function (element, options) {
 
-        this.$el = $(element)
+        this.$el = $(element);
 
-        this.options = options || {}
-        this.tally = 0
+        this.options = options || {};
+        this.tally = 0;
         this.show()
-    }
+    };
 
-    LoadIndicator.prototype.hide = function() {
-        this.tally--
+    LoadIndicator.prototype.hide = function () {
+        this.tally--;
 
         if (this.tally <= 0) {
-            $('div.loading-indicator', this.$el).remove()
+            $('div.loading-indicator', this.$el).remove();
             this.$el.removeClass('in-progress')
         }
-    }
+    };
 
-    LoadIndicator.prototype.show = function(options) {
+    LoadIndicator.prototype.show = function (options) {
         if (options)
-            this.options = options
+            this.options = options;
 
-        this.hide()
+        this.hide();
 
-        var indicator = $('<div class="loading-indicator"></div>')
-        indicator.append($('<div></div>').text(this.options.text))
-        indicator.append($('<span></span>'))
+        var indicator = $('<div class="loading-indicator"></div>');
+        indicator.append($('<div></div>').text(this.options.text));
+        indicator.append($('<span></span>'));
         if (this.options.opaque !== undefined) {
             indicator.addClass('is-opaque')
         }
 
-        this.$el.prepend(indicator)
-        this.$el.addClass('in-progress')
+        this.$el.prepend(indicator);
+        this.$el.addClass('in-progress');
 
         this.tally++
-    }
+    };
 
-    LoadIndicator.prototype.destroy = function() {
-        this.$el.removeData('oc.loadIndicator')
+    LoadIndicator.prototype.destroy = function () {
+        this.$el.removeData('oc.loadIndicator');
         this.$el = null
-    }
+    };
 
     LoadIndicator.DEFAULTS = {
         text: ''
-    }
+    };
 
     // LOADINDICATOR PLUGIN DEFINITION
     // ============================
 
-    var old = $.fn.loadIndicator
+    var old = $.fn.loadIndicator;
 
     $.fn.loadIndicator = function (option) {
         var args = arguments;
 
         return this.each(function () {
-            var $this = $(this)
-            var data  = $this.data('oc.loadIndicator')
-            var options = $.extend({}, LoadIndicator.DEFAULTS, typeof option == 'object' && option)
+            var $this = $(this);
+            var data = $this.data('oc.loadIndicator');
+            var options = $.extend({}, LoadIndicator.DEFAULTS, typeof option == 'object' && option);
 
             if (!data) {
                 if (typeof option == 'string')
@@ -86,43 +87,43 @@
                     data.show(options);
                 else {
                     var methodArgs = [];
-                    for (var i=1; i<args.length; i++)
+                    for (var i = 1; i < args.length; i++)
                         methodArgs.push(args[i])
 
                     data[option].apply(data, methodArgs)
                 }
             }
         })
-    }
+    };
 
-    $.fn.loadIndicator.Constructor = LoadIndicator
+    $.fn.loadIndicator.Constructor = LoadIndicator;
 
     // LOADINDICATOR NO CONFLICT
     // =================
 
     $.fn.loadIndicator.noConflict = function () {
-        $.fn.loadIndicator = old
+        $.fn.loadIndicator = old;
         return this
-    }
+    };
 
     // LOADINDICATOR DATA-API
     // ==============
 
     $(document)
-        .on('ajaxPromise', '[data-load-indicator]', function() {
+        .on('ajaxPromise', '[data-load-indicator]', function () {
             var
                 indicatorContainer = $(this).closest('.loading-indicator-container'),
                 loadingText = $(this).data('load-indicator'),
                 options = {
                     opaque: $(this).data('load-indicator-opaque')
-                }
+                };
 
-                if (loadingText)
-                    options.text = loadingText
+            if (loadingText)
+                options.text = loadingText;
 
             indicatorContainer.loadIndicator(options)
         })
-        .on('ajaxFail ajaxDone', '[data-load-indicator]', function() {
+        .on('ajaxFail ajaxDone', '[data-load-indicator]', function () {
             $(this).closest('.loading-indicator-container').loadIndicator('hide')
         })
 

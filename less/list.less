@@ -61,8 +61,8 @@ table.table.data {
                 &:hover { color: @color-list-text-active; }
             }
 
-            &.sort-desc { .list-head-icon(@angle-down); }
-            &.sort-asc { .list-head-icon(@angle-up); }
+            &.sort-desc { .list-head-icon(@fa-var-angle-down); }
+            &.sort-asc { .list-head-icon(@fa-var-angle-up); }
 
             &.active {
                 background-color: inherit;
@@ -153,7 +153,7 @@ table.table.data {
             }
         }
 
-        tr.rowlink:hover td, tr:not(.no-data).selected td, {
+        tr.rowlink:hover td, tr:not(.no-data).selected td{
             background: @color-list-hover-bg !important;
             text-shadow: 0 -1px 0 @highlight-hover-text-shadow;
             color: @highlight-hover-text;
@@ -475,7 +475,7 @@ table.table.data {
                 &:before {
                     font-size: 14px;
                     line-height: 14px;
-                    .icon(@list-ul);
+                    .icon(@fa-var-list-ul);
                     display: inline-block;
                     margin-left: 8px;
                     vertical-align: baseline;

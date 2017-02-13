@@ -13,96 +13,97 @@
  * Require:
  * - storm/drag.scroll
  */
-+function ($) { "use strict";
++function ($) {
+    "use strict";
 
-    var Base = $.oc.foundation.base,
-        BaseProto = Base.prototype
+    var Base = Storm.foundation.base,
+        BaseProto = Base.prototype;
 
     var Toolbar = function (element, options) {
         var
             $el = this.$el = $(element),
-            $toolbar = $el.closest('.control-toolbar')
+            $toolbar = $el.closest('.control-toolbar');
 
-        $.oc.foundation.controlUtils.markDisposable(element)
-        this.$toolbar = $toolbar
+        Storm.foundation.controlUtils.markDisposable(element);
+        this.$toolbar = $toolbar;
 
         this.options = options || {};
 
-        var noDragSupport = options.noDragSupport !== undefined && options.noDragSupport
+        var noDragSupport = options.noDragSupport !== undefined && options.noDragSupport;
 
-        Base.call(this)
+        Base.call(this);
 
         var scrollClassContainer = options.scrollClassContainer !== undefined
             ? options.scrollClassContainer
-            : $el.parent()
+            : $el.parent();
 
         $el.dragScroll({
             scrollClassContainer: scrollClassContainer,
             useDrag: !noDragSupport
-        })
+        });
 
-        $('.form-control.growable', $toolbar).on('focus.toolbar', function(){
+        $('.form-control.growable', $toolbar).on('focus.toolbar', function () {
             update()
-        })
+        });
 
-        $('.form-control.growable', $toolbar).on('blur.toolbar', function(){
+        $('.form-control.growable', $toolbar).on('blur.toolbar', function () {
             update()
-        })
+        });
 
-        this.$el.one('dispose-control', this.proxy(this.dispose))
+        this.$el.one('dispose-control', this.proxy(this.dispose));
 
         function update() {
             $(window).trigger('resize')
         }
-    }
+    };
 
-    Toolbar.prototype = Object.create(BaseProto)
-    Toolbar.prototype.constructor = Toolbar
+    Toolbar.prototype = Object.create(BaseProto);
+    Toolbar.prototype.constructor = Toolbar;
 
-    Toolbar.prototype.dispose = function() {
-        this.$el.off('dispose-control', this.proxy(this.dispose))
-        $('.form-control.growable', this.$toolbar).off('.toolbar')
-        this.$el.dragScroll('dispose')
-        this.$el.removeData('oc.toolbar')
-        this.$el = null
+    Toolbar.prototype.dispose = function () {
+        this.$el.off('dispose-control', this.proxy(this.dispose));
+        $('.form-control.growable', this.$toolbar).off('.toolbar');
+        this.$el.dragScroll('dispose');
+        this.$el.removeData('oc.toolbar');
+        this.$el = null;
 
         BaseProto.dispose.call(this)
-    }
+    };
 
-    Toolbar.DEFAULTS = {}
+    Toolbar.DEFAULTS = {};
 
     // TOOLBAR PLUGIN DEFINITION
     // ============================
 
-    var old = $.fn.toolbar
+    var old = $.fn.toolbar;
 
     $.fn.toolbar = function (option) {
-        var args = Array.prototype.slice.call(arguments, 1)
+        var args = Array.prototype.slice.call(arguments, 1);
 
         return this.each(function () {
-            var $this = $(this)
-            var data  = $this.data('oc.toolbar')
-            var options = $.extend({}, Toolbar.DEFAULTS, $this.data(), typeof option == 'object' && option)
+            var $this = $(this);
+            var data = $this.data('oc.toolbar');
+            var options = $.extend({}, Toolbar.DEFAULTS, $this.data(), typeof option == 'object' && option);
 
-            if (!data) $this.data('oc.toolbar', (data = new Toolbar(this, options)))
+            if (!data) $this.data('oc.toolbar', (data = new Toolbar(this, options)));
             if (typeof option == 'string') data[option].apply(data, args)
         })
-      }
+    };
 
-    $.fn.toolbar.Constructor = Toolbar
+    $.fn.toolbar.Constructor = Toolbar;
 
     // TOOLBAR NO CONFLICT
     // =================
 
     $.fn.toolbar.noConflict = function () {
-        $.fn.toolbar = old
+        $.fn.toolbar = old;
         return this
-    }
+    };
 
     // TOOLBAR DATA-API
     // ===============
 
-    $(document).on('render', function(){
+    $(document).on('render', function () {
         $('[data-control=toolbar]').toolbar()
     })
 

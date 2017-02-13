@@ -57,7 +57,7 @@
 
         &:after {
             font-size: 14px;
-            .icon(@angle-down);
+            .icon(@fa-var-angle-down);
         }
 
         &.active {
@@ -112,7 +112,7 @@
 
         &:after {
             font-size: 14px;
-            .icon(@angle-down);
+            .icon(@fa-var-angle-down);
         }
 
         &.active {
@@ -193,7 +193,7 @@
 
         background-color: @color-filter-items-bg;
         border-bottom: 1px solid @color-filter-border;
-        a:before { .icon(@plus); }
+        a:before { .icon(@fa-var-plus); }
 
         li.loading {
             padding: 7px;
@@ -212,7 +212,7 @@
     }
 
     .filter-active-items {
-        a:before { .icon(@times); }
+        a:before { .icon(@fa-var-times); }
         li.animate-enter { .animation(fadeInDown .5s); }
     }
 
