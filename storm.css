@@ -73689,6 +73689,7 @@ html.cssanimations .cursor-loading-indicator.hide {
 .control-filter .custom-checkbox label {
   font-size: 13px;
   color: rgba(0, 0, 0, 0.6);
+  max-width: none;
 }
 .control-filter a {
   text-decoration: none;

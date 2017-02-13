@@ -10,9 +10,9 @@
     "use strict";
 
     var FlashMessage = function (options, el) {
-        var
-            options = $.extend({}, FlashMessage.DEFAULTS, options),
-            $element = $(el);
+        var $element = $(el);
+
+        options = $.extend({}, FlashMessage.DEFAULTS, typeof options === 'string' ? {text: options} : options);
 
         $('body > p.flash-message').remove();
 
